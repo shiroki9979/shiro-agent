@@ -10,7 +10,8 @@
 
 ```text
 shiro-agent/
-├── .agents/skills/           # 專案與全域 Agent Skills 庫 (符合 Agent Skills CLI 標準)
+├── custom-skills/            # 自有自建 Agent Skills (原始碼目錄，支援 include 模板展開)
+├── .agents/skills/           # 第三方外部 Agent Skills (由 npx skills 管理)
 ├── configs/                  # 各 Agent 專屬設定與模板
 │   ├── antigravity/          # Antigravity 設定 (rules, mcp, hooks)
 │   ├── cursor/               # Cursor 設定 (rules/mdc, settings)
@@ -24,10 +25,10 @@ shiro-agent/
 │       ├── grill-me.md       # Grill Me 設計樹與邊界決策流程
 │       └── grill-with-docs.md# Grill With Docs 與架構決策 (ADR) 規範
 ├── scripts/                  # 編譯與部署工具
-│   └── build.py              # 模板展開與部署腳本
+│   └── build.py              # 模板展開、技能聚合與部署腳本
 ├── tests/                    # 單元測試
 ├── CONTEXT.md                # 領域術語表 (Domain Language & Glossary)
-├── skills-lock.json          # Skills 來源、雜湊與鎖定檔
+├── skills-lock.json          # 第三方 Skills 來源、雜湊與鎖定檔
 ├── pyproject.toml            # uv / Python 專案定義
 └── Makefile                  # 快捷開發與部署指令
 ```
@@ -41,13 +42,13 @@ shiro-agent/
 ### 快捷指令 (Makefile)
 
 ```bash
-make build         # 編譯所有設定至 dist/
+make build         # 編譯所有設定至 dist/ (聚合 custom-skills 與 .agents/skills)
 make deploy        # 編譯並部署至全域系統路徑 (~/.agents, ~/.gemini/config, ~/.cursor, ~/.claude)
 make dry-run       # 預覽編譯與部署
 make test          # 執行單元測試
-make skills-list   # 列出已安裝之 Agent Skills
-make skills-add PKG=<source>  # 新增外部 Agent Skill
-make skills-update # 更新已安裝之 Agent Skills
+make skills-list   # 列出已安裝之第三方 Agent Skills
+make skills-add PKG=<source>  # 新增第三方 Agent Skill
+make skills-update # 更新第三方 Agent Skills
 make help          # 檢視所有可用指令
 ```
 
@@ -55,23 +56,23 @@ make help          # 檢視所有可用指令
 
 ### 1. 編譯與預覽 (Dry-run)
 
-預設將 `shared/` 中的規範展開注入至 `dist/` 目錄：
+預設將 `shared/` 中的規範展開，並聚合 `custom-skills/` 與 `.agents/skills/` 注入至 `dist/` 目錄：
 
 ```bash
-# 模擬編譯所有 Agent 設定
+# 模擬編譯所有 Agent 設定與 Skills
 uv run python scripts/build.py --dry-run
 # 或使用 Makefile
 make dry-run
 
-# 指定單一 Agent (如 antigravity, cursor, claude, skills)
-uv run python scripts/build.py --target antigravity --dry-run
+# 指定單一目標 (如 antigravity, cursor, claude, skills)
+uv run python scripts/build.py --target skills --dry-run
 ```
 
 ### 2. 部署至系統設定路徑
 
 執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份）：
 
-- **Skills 與 Lock 檔**: `~/.agents/skills/` 與 `~/.agents/skills-lock.json`
+- **Skills 與 Lock 檔**: `~/.agents/skills/`（聚合自有與第三方技能）與 `~/.agents/skills-lock.json`
 - **Antigravity**: `~/.gemini/config/`
 - **Cursor**: `~/.cursor/`
 - **Claude**: `~/.claude/`
@@ -89,9 +90,14 @@ uv run python scripts/build.py --target cursor --deploy
 
 ### 3. Agent Skills 管理
 
-本專案全面相容社群標準 Agent Skills CLI（`npx skills`）生態：
+#### 自建技能（Custom Skills）
+- 建立於 `custom-skills/<skill-name>/SKILL.md`。
+- 支援在 Markdown 檔案內使用 `<!-- INCLUDE:shared/coding-style.md -->` 等標籤引用共用規範。
+- 執行 `make build` 或 `make deploy` 時會自動進行同名衝突檢查與模板展開，並聚合至 `dist/.agents/skills/` 與全域環境。
 
-#### 新增 Skills
+#### 第三方技能（Third-party Skills）
+全面相容社群標準 Agent Skills CLI（`npx skills`）生態：
+
 ```bash
 # 使用 Makefile 新增
 make skills-add PKG=mattpocock/skills
@@ -99,13 +105,9 @@ make skills-add PKG="https://github.com/vercel-labs/skills --skill find-skills"
 
 # 或直接使用原生 CLI
 npx skills add mattpocock/skills
-```
 
-#### 列出與更新 Skills
-```bash
-# 列出已安裝技能
+# 列出與更新
 make skills-list
-# 更新技能版本
 make skills-update
 ```
 
