@@ -12,7 +12,7 @@ import os
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from build import expand_includes, compile_targets, deploy  # noqa: E402
+from build import expand_includes, compile_targets, compile_skills, deploy, DEFAULT_DEPLOY_PATHS  # noqa: E402
 
 
 class TestBuild(unittest.TestCase):
@@ -25,6 +25,11 @@ class TestBuild(unittest.TestCase):
         # Create sample shared file
         self.identity_file = self.shared_dir / "identity.md"
         self.identity_file.write_text("# Identity\nName: White Hunag\n", encoding="utf-8")
+
+        # Create sample skills
+        self.skill_dir = self.root_dir / "skills" / "curated" / "sample-skill"
+        self.skill_dir.mkdir(parents=True, exist_ok=True)
+        (self.skill_dir / "SKILL.md").write_text("# Sample Skill", encoding="utf-8")
 
     def tearDown(self):
         self.temp_dir.cleanup()
@@ -39,6 +44,25 @@ class TestBuild(unittest.TestCase):
         template = "<!-- INCLUDE:shared/missing.md -->"
         with self.assertRaises(FileNotFoundError):
             expand_includes(template, self.root_dir)
+
+    def test_compile_skills_outputs_to_dot_agents(self):
+        out_dir = self.root_dir / "dist"
+        pairs = compile_skills(self.root_dir, out_dir)
+
+        expected_dest = out_dir / ".agents" / "skills" / "sample-skill" / "SKILL.md"
+        expected_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "sample-skill" / "SKILL.md"
+
+        self.assertTrue(expected_dest.exists())
+        self.assertEqual(expected_dest.read_text(encoding="utf-8"), "# Sample Skill")
+        self.assertIn((expected_dest, expected_deploy), pairs)
+
+    def test_compile_targets_all_includes_dot_agents_skills(self):
+        out_dir = self.root_dir / "dist"
+        pairs = compile_targets(["all"], self.root_dir, out_dir)
+
+        # 驗證編譯配對中包含 .agents/skills
+        skill_pairs = [p for p in pairs if ".agents/skills" in str(p[0])]
+        self.assertTrue(len(skill_pairs) > 0)
 
     def test_compile_and_deploy_dry_run(self):
         src_file = self.root_dir / "sample.txt"
