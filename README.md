@@ -10,25 +10,26 @@
 
 ```text
 shiro-agent/
+├── .agents/skills/           # 專案與全域 Agent Skills 庫 (符合 Agent Skills CLI 標準)
 ├── configs/                  # 各 Agent 專屬設定與模板
 │   ├── antigravity/          # Antigravity 設定 (rules, mcp, hooks)
 │   ├── cursor/               # Cursor 設定 (rules/mdc, settings)
 │   └── claude/               # Claude Code / Desktop 設定 (CLAUDE.md, mcp)
+├── docs/                     # 專案架構文件與決策記錄
+│   └── adr/                  # 架構決策記錄 (Architecture Decision Records)
 ├── shared/                   # 跨 Agent 共用規範 (Single Source of Truth)
 │   ├── identity.md           # 個人身分、角色與語言回覆偏好
 │   ├── coding-style.md       # Clean Code, DRY, SOLID, 測試規範
 │   └── workflows/            # 通用工作流程
 │       ├── grill-me.md       # Grill Me 設計樹與邊界決策流程
 │       └── grill-with-docs.md# Grill With Docs 與架構決策 (ADR) 規範
-├── skills/                   # Skills 庫
-│   ├── curated/              # 自建與精選 Skills
-│   ├── third-party/          # 外部第三方 Skills (自動下載)
-│   └── manifest.json         # 第三方 Skills 來源與清單
-├── scripts/                  # 編譯、部署與同步工具
-│   ├── build.py              # 模板展開與部署腳本
-│   └── fetch_skills.py       # 第三方 Skills 下載器
+├── scripts/                  # 編譯與部署工具
+│   └── build.py              # 模板展開與部署腳本
 ├── tests/                    # 單元測試
-└── pyproject.toml            # uv / Python 專案定義
+├── CONTEXT.md                # 領域術語表 (Domain Language & Glossary)
+├── skills-lock.json          # Skills 來源、雜湊與鎖定檔
+├── pyproject.toml            # uv / Python 專案定義
+└── Makefile                  # 快捷開發與部署指令
 ```
 
 ---
@@ -41,10 +42,12 @@ shiro-agent/
 
 ```bash
 make build         # 編譯所有設定至 dist/
-make deploy        # 編譯並部署至全域系統路徑 (~/.gemini/config, ~/.cursor, ~/.claude)
+make deploy        # 編譯並部署至全域系統路徑 (~/.agents, ~/.gemini/config, ~/.cursor, ~/.claude)
 make dry-run       # 預覽編譯與部署
 make test          # 執行單元測試
-make skills-fetch  # 下載所有啟用的第三方 Skills
+make skills-list   # 列出已安裝之 Agent Skills
+make skills-add PKG=<source>  # 新增外部 Agent Skill
+make skills-update # 更新已安裝之 Agent Skills
 make help          # 檢視所有可用指令
 ```
 
@@ -60,7 +63,7 @@ uv run python scripts/build.py --dry-run
 # 或使用 Makefile
 make dry-run
 
-# 指定單一 Agent (如 antigravity, cursor, claude)
+# 指定單一 Agent (如 antigravity, cursor, claude, skills)
 uv run python scripts/build.py --target antigravity --dry-run
 ```
 
@@ -68,7 +71,7 @@ uv run python scripts/build.py --target antigravity --dry-run
 
 執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份）：
 
-- **Skills (共用)**: `~/.agents/skills/`
+- **Skills 與 Lock 檔**: `~/.agents/skills/` 與 `~/.agents/skills-lock.json`
 - **Antigravity**: `~/.gemini/config/`
 - **Cursor**: `~/.cursor/`
 - **Claude**: `~/.claude/`
@@ -84,46 +87,26 @@ uv run python scripts/build.py --target skills --deploy
 uv run python scripts/build.py --target cursor --deploy
 ```
 
-### 3. 第三方 Skills 管理
+### 3. Agent Skills 管理
 
-#### 一鍵新增與部署（一步到位）
+本專案全面相容社群標準 Agent Skills CLI（`npx skills`）生態：
 
-支援 skills.sh 簡寫語法（`owner/repo@skill`）、`--skill` 參數或 GitHub 連結，自動寫入清單、下載並部署至全域：
-
+#### 新增 Skills
 ```bash
-# 新增並自動部署至全域 Skills 設定 (~/.agents/skills/)
-uv run python scripts/fetch_skills.py add "https://github.com/vercel-labs/skills --skill find-skills" --deploy
+# 使用 Makefile 新增
+make skills-add PKG=mattpocock/skills
+make skills-add PKG="https://github.com/vercel-labs/skills --skill find-skills"
 
-# 僅下載並記錄至 manifest.json
-uv run python scripts/fetch_skills.py add vercel-labs/agent-skills@find-skills
+# 或直接使用原生 CLI
+npx skills add mattpocock/skills
 ```
 
-#### 手動設定 `skills/manifest.json`
-
-亦可在 `skills/manifest.json` 中手動填寫（`destination` 預設為 `skills/third-party/<name>/SKILL.md`，`enabled` 預設為 `true`，皆可省略）：
-
-```json
-{
-  "skills": [
-    {
-      "name": "find-skills",
-      "source": "vercel-labs/agent-skills@find-skills"
-    }
-  ]
-}
-```
-
-#### 批次操作指令
-
+#### 列出與更新 Skills
 ```bash
-# 列出清單中所有 Skills
-uv run python scripts/fetch_skills.py --list
-
-# 下載所有已啟用的 Skills
-uv run python scripts/fetch_skills.py --all
-
-# 下載指定 Skill
-uv run python scripts/fetch_skills.py --name <skill-name>
+# 列出已安裝技能
+make skills-list
+# 更新技能版本
+make skills-update
 ```
 
 ---
@@ -131,5 +114,7 @@ uv run python scripts/fetch_skills.py --name <skill-name>
 ## 執行測試
 
 ```bash
+make test
+# 或直接使用 uv
 uv run python -m unittest discover -s tests -p "test_*.py" -v
 ```
