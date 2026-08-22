@@ -26,10 +26,15 @@ class TestBuild(unittest.TestCase):
         self.identity_file = self.shared_dir / "identity.md"
         self.identity_file.write_text("# Identity\nName: White Hunag\n", encoding="utf-8")
 
-        # Create sample skills in .agents/skills/
-        self.skill_dir = self.root_dir / ".agents" / "skills" / "sample-skill"
-        self.skill_dir.mkdir(parents=True, exist_ok=True)
-        (self.skill_dir / "SKILL.md").write_text("# Sample Skill\n<!-- INCLUDE:shared/identity.md -->", encoding="utf-8")
+        # Create sample custom skills in custom-skills/
+        self.custom_skill_dir = self.root_dir / "custom-skills" / "custom-skill"
+        self.custom_skill_dir.mkdir(parents=True, exist_ok=True)
+        (self.custom_skill_dir / "SKILL.md").write_text("# Custom Skill\n<!-- INCLUDE:shared/identity.md -->", encoding="utf-8")
+
+        # Create sample third-party skills in .agents/skills/
+        self.third_party_skill_dir = self.root_dir / ".agents" / "skills" / "vendor-skill"
+        self.third_party_skill_dir.mkdir(parents=True, exist_ok=True)
+        (self.third_party_skill_dir / "SKILL.md").write_text("# Vendor Skill", encoding="utf-8")
 
         # Create sample skills-lock.json
         self.lock_file = self.root_dir / "skills-lock.json"
@@ -49,24 +54,40 @@ class TestBuild(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             expand_includes(template, self.root_dir)
 
-    def test_compile_skills_outputs_to_dot_agents_and_expands(self):
+    def test_compile_skills_aggregates_custom_and_third_party(self):
         out_dir = self.root_dir / "dist"
         pairs = compile_skills(self.root_dir, out_dir)
 
-        expected_dest = out_dir / ".agents" / "skills" / "sample-skill" / "SKILL.md"
-        expected_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "sample-skill" / "SKILL.md"
+        # 驗證 custom skill 展開與輸出
+        custom_dest = out_dir / ".agents" / "skills" / "custom-skill" / "SKILL.md"
+        custom_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "custom-skill" / "SKILL.md"
+        self.assertTrue(custom_dest.exists())
+        self.assertEqual(custom_dest.read_text(encoding="utf-8").strip(), "# Custom Skill\n# Identity\nName: White Hunag")
+        self.assertIn((custom_dest, custom_deploy), pairs)
 
-        self.assertTrue(expected_dest.exists())
-        # Verify that template expansion occurred
-        expected_content = "# Sample Skill\n# Identity\nName: White Hunag"
-        self.assertEqual(expected_dest.read_text(encoding="utf-8").strip(), expected_content.strip())
-        self.assertIn((expected_dest, expected_deploy), pairs)
+        # 驗證 third-party skill 輸出
+        vendor_dest = out_dir / ".agents" / "skills" / "vendor-skill" / "SKILL.md"
+        vendor_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "vendor-skill" / "SKILL.md"
+        self.assertTrue(vendor_dest.exists())
+        self.assertEqual(vendor_dest.read_text(encoding="utf-8"), "# Vendor Skill")
+        self.assertIn((vendor_dest, vendor_deploy), pairs)
 
-        # Verify skills-lock.json compilation and deployment mapping
+        # 驗證 skills-lock.json 輸出
         expected_lock_dest = out_dir / ".agents" / "skills-lock.json"
         expected_lock_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills-lock.json"
         self.assertTrue(expected_lock_dest.exists())
         self.assertIn((expected_lock_dest, expected_lock_deploy), pairs)
+
+    def test_compile_skills_collision_error(self):
+        # 建立同名衝突技能
+        conflict_dir = self.root_dir / "custom-skills" / "vendor-skill"
+        conflict_dir.mkdir(parents=True, exist_ok=True)
+        (conflict_dir / "SKILL.md").write_text("# Conflicting Custom Skill", encoding="utf-8")
+
+        out_dir = self.root_dir / "dist"
+        with self.assertRaises(ValueError) as ctx:
+            compile_skills(self.root_dir, out_dir)
+        self.assertIn("Skill name collision detected", str(ctx.exception))
 
     def test_compile_targets_all_includes_dot_agents_skills(self):
         out_dir = self.root_dir / "dist"
