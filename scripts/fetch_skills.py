@@ -228,9 +228,9 @@ def add_skill(
     if deploy:
         print("\nTriggering deployment...")
         try:
-            from build import compile_antigravity, deploy as run_deploy  # noqa: E402
+            from build import compile_skills, deploy as run_deploy  # noqa: E402
             out_dir = (root_dir / "dist").resolve()
-            pairs = compile_antigravity(root_dir, out_dir)
+            pairs = compile_skills(root_dir, out_dir)
             actions = run_deploy(pairs, dry_run=False, backup=True)
             for action in actions:
                 print(f"  {action}")

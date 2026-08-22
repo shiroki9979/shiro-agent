@@ -16,6 +16,7 @@ from typing import Dict, List, Optional, Tuple
 INCLUDE_PATTERN = re.compile(r"<!--\s*INCLUDE:([^\s>]+)\s*-->")
 
 DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
+    "agents": Path.home() / ".agents",
     "antigravity": Path.home() / ".gemini" / "config",
     "cursor": Path.home() / ".cursor",
     "claude": Path.home() / ".claude",
@@ -52,8 +53,32 @@ def process_file(src_path: Path, dest_path: Path, root_dir: Path) -> None:
         shutil.copy2(src_path, dest_path)
 
 
+def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
+    """編譯通用 Skills 至 .agents/ 目錄與全域路徑。"""
+    pairs: List[Tuple[Path, Path]] = []
+    skills_root = repo_root / "skills"
+    target_out = out_dir / ".agents" / "skills"
+
+    for category in ["curated", "third-party"]:
+        cat_dir = skills_root / category
+        if cat_dir.exists():
+            for skill_dir in cat_dir.glob("*"):
+                if skill_dir.is_dir() and (skill_dir / "SKILL.md").exists():
+                    skill_name = skill_dir.name
+                    dest_skill_dir = target_out / skill_name
+                    dest_skill_dir.mkdir(parents=True, exist_ok=True)
+                    for item in skill_dir.glob("**/*"):
+                        if item.is_file() and item.name != ".gitkeep":
+                            rel_to_skill = item.relative_to(skill_dir)
+                            dest_item = dest_skill_dir / rel_to_skill
+                            process_file(item, dest_item, repo_root)
+                            pairs.append((dest_item, DEFAULT_DEPLOY_PATHS["agents"] / "skills" / skill_name / rel_to_skill))
+
+    return pairs
+
+
 def compile_antigravity(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
-    """編譯 Antigravity 設定檔與 Skills。"""
+    """編譯 Antigravity 設定檔與規則。"""
     pairs: List[Tuple[Path, Path]] = []
     config_dir = repo_root / "configs" / "antigravity"
     target_out = out_dir / "antigravity"
@@ -74,23 +99,6 @@ def compile_antigravity(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path
             dest_file = target_out / json_name
             process_file(json_src, dest_file, repo_root)
             pairs.append((dest_file, DEFAULT_DEPLOY_PATHS["antigravity"] / json_name))
-
-    # 複製 skills (curated + third-party)
-    skills_root = repo_root / "skills"
-    for category in ["curated", "third-party"]:
-        cat_dir = skills_root / category
-        if cat_dir.exists():
-            for skill_dir in cat_dir.glob("*"):
-                if skill_dir.is_dir() and (skill_dir / "SKILL.md").exists():
-                    skill_name = skill_dir.name
-                    dest_skill_dir = target_out / "skills" / skill_name
-                    dest_skill_dir.mkdir(parents=True, exist_ok=True)
-                    for item in skill_dir.glob("**/*"):
-                        if item.is_file() and item.name != ".gitkeep":
-                            rel_to_skill = item.relative_to(skill_dir)
-                            dest_item = dest_skill_dir / rel_to_skill
-                            process_file(item, dest_item, repo_root)
-                            pairs.append((dest_item, DEFAULT_DEPLOY_PATHS["antigravity"] / "skills" / skill_name / rel_to_skill))
 
     return pairs
 
@@ -149,6 +157,7 @@ def compile_targets(targets: List[str], repo_root: Path, out_dir: Path) -> List[
     all_pairs: List[Tuple[Path, Path]] = []
 
     target_map = {
+        "skills": compile_skills,
         "antigravity": compile_antigravity,
         "cursor": compile_cursor,
         "claude": compile_claude,
@@ -192,9 +201,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--target",
         nargs="+",
-        choices=["all", "antigravity", "cursor", "claude"],
+        choices=["all", "skills", "antigravity", "cursor", "claude"],
         default=["all"],
-        help="Target agents to compile/deploy (default: all)",
+        help="Target configurations to compile/deploy (default: all)",
     )
     parser.add_argument(
         "--deploy",

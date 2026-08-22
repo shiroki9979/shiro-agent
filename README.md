@@ -68,17 +68,19 @@ uv run python scripts/build.py --target antigravity --dry-run
 
 執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份）：
 
+- **Skills (共用)**: `~/.agents/skills/`
 - **Antigravity**: `~/.gemini/config/`
 - **Cursor**: `~/.cursor/`
 - **Claude**: `~/.claude/`
 
 ```bash
-# 部署全部 Agent 設定
+# 部署全部 Agent 設定與 Skills
 uv run python scripts/build.py --deploy
 # 或使用 Makefile
 make deploy
 
-# 部署指定 Agent
+# 部署指定 Agent 或 Skills
+uv run python scripts/build.py --target skills --deploy
 uv run python scripts/build.py --target cursor --deploy
 ```
 
@@ -89,8 +91,8 @@ uv run python scripts/build.py --target cursor --deploy
 支援 skills.sh 簡寫語法（`owner/repo@skill`）、`--skill` 參數或 GitHub 連結，自動寫入清單、下載並部署至全域：
 
 ```bash
-# 新增並自動部署至全域 Antigravity 設定
-uv run python scripts/fetch_skills.py add vercel-labs/agent-skills@find-skills --deploy
+# 新增並自動部署至全域 Skills 設定 (~/.agents/skills/)
+uv run python scripts/fetch_skills.py add "https://github.com/vercel-labs/skills --skill find-skills" --deploy
 
 # 僅下載並記錄至 manifest.json
 uv run python scripts/fetch_skills.py add vercel-labs/agent-skills@find-skills
