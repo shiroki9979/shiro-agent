@@ -35,7 +35,20 @@ shiro-agent/
 
 ## 快速開始
 
-本專案使用 [`uv`](https://github.com/astral-sh/uv) 進行環境與執行管理。
+本專案使用 [`uv`](https://github.com/astral-sh/uv) 進行環境與執行管理，並提供 [`Makefile`](file:///home/shiro/repos/shiro-agent/Makefile) 作為便捷指令入口。
+
+### 快捷指令 (Makefile)
+
+```bash
+make build         # 編譯所有設定至 dist/
+make deploy        # 編譯並部署至全域系統路徑 (~/.gemini/config, ~/.cursor, ~/.claude)
+make dry-run       # 預覽編譯與部署
+make test          # 執行單元測試
+make skills-fetch  # 下載所有啟用的第三方 Skills
+make help          # 檢視所有可用指令
+```
+
+---
 
 ### 1. 編譯與預覽 (Dry-run)
 
@@ -44,6 +57,8 @@ shiro-agent/
 ```bash
 # 模擬編譯所有 Agent 設定
 uv run python scripts/build.py --dry-run
+# 或使用 Makefile
+make dry-run
 
 # 指定單一 Agent (如 antigravity, cursor, claude)
 uv run python scripts/build.py --target antigravity --dry-run
@@ -60,6 +75,8 @@ uv run python scripts/build.py --target antigravity --dry-run
 ```bash
 # 部署全部 Agent 設定
 uv run python scripts/build.py --deploy
+# 或使用 Makefile
+make deploy
 
 # 部署指定 Agent
 uv run python scripts/build.py --target cursor --deploy
@@ -67,7 +84,34 @@ uv run python scripts/build.py --target cursor --deploy
 
 ### 3. 第三方 Skills 管理
 
-透過 `skills/manifest.json` 定義外部 Skills 來源：
+#### 一鍵新增與部署（一步到位）
+
+支援 skills.sh 簡寫語法（`owner/repo@skill`）、`--skill` 參數或 GitHub 連結，自動寫入清單、下載並部署至全域：
+
+```bash
+# 新增並自動部署至全域 Antigravity 設定
+uv run python scripts/fetch_skills.py add vercel-labs/agent-skills@find-skills --deploy
+
+# 僅下載並記錄至 manifest.json
+uv run python scripts/fetch_skills.py add vercel-labs/agent-skills@find-skills
+```
+
+#### 手動設定 `skills/manifest.json`
+
+亦可在 `skills/manifest.json` 中手動填寫（`destination` 預設為 `skills/third-party/<name>/SKILL.md`，`enabled` 預設為 `true`，皆可省略）：
+
+```json
+{
+  "skills": [
+    {
+      "name": "find-skills",
+      "source": "vercel-labs/agent-skills@find-skills"
+    }
+  ]
+}
+```
+
+#### 批次操作指令
 
 ```bash
 # 列出清單中所有 Skills
