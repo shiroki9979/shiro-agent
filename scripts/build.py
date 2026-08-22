@@ -54,25 +54,30 @@ def process_file(src_path: Path, dest_path: Path, root_dir: Path) -> None:
 
 
 def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
-    """編譯通用 Skills 至 .agents/ 目錄與全域路徑。"""
+    """編譯通用 Skills 與 lock 檔至 .agents/ 目錄與全域路徑。"""
     pairs: List[Tuple[Path, Path]] = []
-    skills_root = repo_root / "skills"
+    skills_root = repo_root / ".agents" / "skills"
     target_out = out_dir / ".agents" / "skills"
 
-    for category in ["curated", "third-party"]:
-        cat_dir = skills_root / category
-        if cat_dir.exists():
-            for skill_dir in cat_dir.glob("*"):
-                if skill_dir.is_dir() and (skill_dir / "SKILL.md").exists():
-                    skill_name = skill_dir.name
-                    dest_skill_dir = target_out / skill_name
-                    dest_skill_dir.mkdir(parents=True, exist_ok=True)
-                    for item in skill_dir.glob("**/*"):
-                        if item.is_file() and item.name != ".gitkeep":
-                            rel_to_skill = item.relative_to(skill_dir)
-                            dest_item = dest_skill_dir / rel_to_skill
-                            process_file(item, dest_item, repo_root)
-                            pairs.append((dest_item, DEFAULT_DEPLOY_PATHS["agents"] / "skills" / skill_name / rel_to_skill))
+    if skills_root.exists():
+        for skill_dir in skills_root.glob("*"):
+            if skill_dir.is_dir() and (skill_dir / "SKILL.md").exists():
+                skill_name = skill_dir.name
+                dest_skill_dir = target_out / skill_name
+                dest_skill_dir.mkdir(parents=True, exist_ok=True)
+                for item in skill_dir.glob("**/*"):
+                    if item.is_file() and item.name != ".gitkeep":
+                        rel_to_skill = item.relative_to(skill_dir)
+                        dest_item = dest_skill_dir / rel_to_skill
+                        process_file(item, dest_item, repo_root)
+                        pairs.append((dest_item, DEFAULT_DEPLOY_PATHS["agents"] / "skills" / skill_name / rel_to_skill))
+
+    # 同步 skills-lock.json 至全域 .agents 目錄
+    lock_file = repo_root / "skills-lock.json"
+    if lock_file.exists():
+        dest_lock = out_dir / ".agents" / "skills-lock.json"
+        process_file(lock_file, dest_lock, repo_root)
+        pairs.append((dest_lock, DEFAULT_DEPLOY_PATHS["agents"] / "skills-lock.json"))
 
     return pairs
 

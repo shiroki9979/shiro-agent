@@ -26,10 +26,14 @@ class TestBuild(unittest.TestCase):
         self.identity_file = self.shared_dir / "identity.md"
         self.identity_file.write_text("# Identity\nName: White Hunag\n", encoding="utf-8")
 
-        # Create sample skills
-        self.skill_dir = self.root_dir / "skills" / "curated" / "sample-skill"
+        # Create sample skills in .agents/skills/
+        self.skill_dir = self.root_dir / ".agents" / "skills" / "sample-skill"
         self.skill_dir.mkdir(parents=True, exist_ok=True)
-        (self.skill_dir / "SKILL.md").write_text("# Sample Skill", encoding="utf-8")
+        (self.skill_dir / "SKILL.md").write_text("# Sample Skill\n<!-- INCLUDE:shared/identity.md -->", encoding="utf-8")
+
+        # Create sample skills-lock.json
+        self.lock_file = self.root_dir / "skills-lock.json"
+        self.lock_file.write_text('{"version": 1, "skills": {}}', encoding="utf-8")
 
     def tearDown(self):
         self.temp_dir.cleanup()
@@ -45,7 +49,7 @@ class TestBuild(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             expand_includes(template, self.root_dir)
 
-    def test_compile_skills_outputs_to_dot_agents(self):
+    def test_compile_skills_outputs_to_dot_agents_and_expands(self):
         out_dir = self.root_dir / "dist"
         pairs = compile_skills(self.root_dir, out_dir)
 
@@ -53,8 +57,16 @@ class TestBuild(unittest.TestCase):
         expected_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "sample-skill" / "SKILL.md"
 
         self.assertTrue(expected_dest.exists())
-        self.assertEqual(expected_dest.read_text(encoding="utf-8"), "# Sample Skill")
+        # Verify that template expansion occurred
+        expected_content = "# Sample Skill\n# Identity\nName: White Hunag"
+        self.assertEqual(expected_dest.read_text(encoding="utf-8").strip(), expected_content.strip())
         self.assertIn((expected_dest, expected_deploy), pairs)
+
+        # Verify skills-lock.json compilation and deployment mapping
+        expected_lock_dest = out_dir / ".agents" / "skills-lock.json"
+        expected_lock_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills-lock.json"
+        self.assertTrue(expected_lock_dest.exists())
+        self.assertIn((expected_lock_dest, expected_lock_deploy), pairs)
 
     def test_compile_targets_all_includes_dot_agents_skills(self):
         out_dir = self.root_dir / "dist"
