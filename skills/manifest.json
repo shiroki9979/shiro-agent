@@ -7,6 +7,11 @@
       "source": "https://raw.githubusercontent.com/anthropics/anthropic-quickstarts/main/README.md",
       "destination": "skills/third-party/skills-sh-template/SKILL.md",
       "enabled": false
+    },
+    {
+      "name": "find-skills",
+      "description": "This skill helps you discover and install skills from the open agent skills ecosystem.",
+      "source": "https://github.com/vercel-labs/skills --skill find-skills"
     }
   ]
 }
