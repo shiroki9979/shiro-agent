@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "skills": [
+    {
+      "name": "skills-sh-template",
+      "description": "Template reference for skills fetched from skills.sh or GitHub raw content",
+      "source": "https://raw.githubusercontent.com/anthropics/anthropic-quickstarts/main/README.md",
+      "destination": "skills/third-party/skills-sh-template/SKILL.md",
+      "enabled": false
+    }
+  ]
+}
