@@ -87,7 +87,9 @@ def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
                 rel_to_skill = item.relative_to(skill_dir)
                 dest_item = dest_skill_dir / rel_to_skill
                 process_file(item, dest_item, repo_root)
-                pairs.append((dest_item, DEFAULT_DEPLOY_PATHS["agents"] / "skills" / skill_name / rel_to_skill))
+                for agent_key in ["agents", "antigravity", "claude", "cursor"]:
+                    deploy_path = DEFAULT_DEPLOY_PATHS[agent_key] / "skills" / skill_name / rel_to_skill
+                    pairs.append((dest_item, deploy_path))
 
     # 同步 skills-lock.json 至全域 .agents 目錄
     lock_file = repo_root / "skills-lock.json"

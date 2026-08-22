@@ -72,10 +72,14 @@ uv run python scripts/build.py --target skills --dry-run
 
 執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份）：
 
-- **Skills 與 Lock 檔**: `~/.agents/skills/`（聚合自有與第三方技能）與 `~/.agents/skills-lock.json`
-- **Antigravity**: `~/.gemini/config/`
-- **Cursor**: `~/.cursor/`
-- **Claude**: `~/.claude/`
+- **Skills (多平台全域同步分發)**：聚合自有與第三方技能並同時派發至：
+  - `~/.agents/skills/` 與 `~/.agents/skills-lock.json`（Agent Skills CLI）
+  - `~/.gemini/config/skills/`（Antigravity）
+  - `~/.claude/skills/`（Claude Code）
+  - `~/.cursor/skills/`（Cursor）
+- **Antigravity Rules / Config**：`~/.gemini/config/rules/`、`mcp_config.json`、`hooks.json`
+- **Cursor Rules / Config**：`~/.cursor/rules/`、`settings.json`
+- **Claude Config**：`~/.claude/CLAUDE.md`、`mcp_config.json`
 
 ```bash
 # 部署全部 Agent 設定與 Skills
