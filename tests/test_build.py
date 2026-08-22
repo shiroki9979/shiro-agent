@@ -58,19 +58,23 @@ class TestBuild(unittest.TestCase):
         out_dir = self.root_dir / "dist"
         pairs = compile_skills(self.root_dir, out_dir)
 
-        # 驗證 custom skill 展開與輸出
+        # 驗證 custom skill 展開與多平台派發輸出
         custom_dest = out_dir / ".agents" / "skills" / "custom-skill" / "SKILL.md"
-        custom_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "custom-skill" / "SKILL.md"
         self.assertTrue(custom_dest.exists())
         self.assertEqual(custom_dest.read_text(encoding="utf-8").strip(), "# Custom Skill\n# Identity\nName: White Hunag")
-        self.assertIn((custom_dest, custom_deploy), pairs)
 
-        # 驗證 third-party skill 輸出
+        for key in ["agents", "antigravity", "claude", "cursor"]:
+            deploy_target = DEFAULT_DEPLOY_PATHS[key] / "skills" / "custom-skill" / "SKILL.md"
+            self.assertIn((custom_dest, deploy_target), pairs)
+
+        # 驗證 third-party skill 多平台派發輸出
         vendor_dest = out_dir / ".agents" / "skills" / "vendor-skill" / "SKILL.md"
-        vendor_deploy = DEFAULT_DEPLOY_PATHS["agents"] / "skills" / "vendor-skill" / "SKILL.md"
         self.assertTrue(vendor_dest.exists())
         self.assertEqual(vendor_dest.read_text(encoding="utf-8"), "# Vendor Skill")
-        self.assertIn((vendor_dest, vendor_deploy), pairs)
+
+        for key in ["agents", "antigravity", "claude", "cursor"]:
+            deploy_target = DEFAULT_DEPLOY_PATHS[key] / "skills" / "vendor-skill" / "SKILL.md"
+            self.assertIn((vendor_dest, deploy_target), pairs)
 
         # 驗證 skills-lock.json 輸出
         expected_lock_dest = out_dir / ".agents" / "skills-lock.json"
