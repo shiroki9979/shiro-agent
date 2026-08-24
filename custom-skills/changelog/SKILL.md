@@ -71,12 +71,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 4. 核心工作流程（Standard Operating Procedures）
 
 ### SOP 1：初始化 CHANGELOG.md（全新專案）
+
 1. 檢視專案根目錄是否已有 `CHANGELOG.md`。
 2. 若無，依上方標準模板建立，包含 Preamble、`## [Unreleased]` 與當前初始版本或首個發布版本。
 3. 取得專案 Git Remote URL（若有），於底部配置對應的 GitHub / GitLab 比較連結。
 
 ### SOP 2：日常記錄（記錄至 Unreleased）
+
 當完成一項功能開發、Bug 修復或重構時：
+
 1. **定位 Unreleased**：在 `## [Unreleased]` 區塊下找到對應的分類標頭（如 `### Added`、`### Fixed`）；若該分類不存在則新增之。
 2. **轉譯 Git Log 為人本語言**：
    - 提取使用者/開發者視角的實質影響。
@@ -85,7 +88,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. **保持分類排序**：分類標頭建議依序排列：`Added` ➔ `Changed` ➔ `Deprecated` ➔ `Removed` ➔ `Fixed` ➔ `Security`。
 
 ### SOP 3：版本發布切版（Bump Version & Release）
+
 當準備進行版本發布時：
+
 1. **評估版本號（SemVer 判定）**：
    - 包含破壞性變更（Breaking Changes） ➔ **MAJOR** 升版（`X.0.0`）
    - 僅包含向後相容的新功能（`Added` / `Deprecated`） ➔ **MINOR** 升版（`0.X.0`）
@@ -105,10 +110,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 當專案長期迭代導致 `CHANGELOG.md` 過長時，依以下流程進行結構化歸檔：
 
 ### 觸發門檻
+
 - **行數門檻**：`CHANGELOG.md` 總行數超過 **500 ~ 800 行**。
 - **體積門檻**：檔案體積大於 **50 KB**。
 
 ### 歸檔操作步驟（SOP 4）
+
 1. **確定歸檔範圍與檔名**：
    - 依 Major 版本或年份切分早期版本，建立存放目錄 `docs/changelogs/`。
    - 命名範例：`docs/changelogs/CHANGELOG-v1.md`、`docs/changelogs/CHANGELOG-v0.md` 或 `docs/changelogs/CHANGELOG-2025.md`。
@@ -123,12 +130,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 6. Git Log 轉譯轉化指引
 
-| 原始 Git Commit（禁止直接照搬） | Keep a Changelog 人本轉譯（推薦） |
-| :--- | :--- |
-| `fix: change regex in utils.py line 42` | `### Fixed`<br>`- 修復包含特殊字元的路徑解析失敗問題。` |
-| `feat: add adr-writing/SKILL.md and tests` | `### Added`<br>`- 新增架構決策紀錄（ADR）撰寫技能，支援 5 態生命週期與三大門檻檢核。` |
-| `refactor: extract helper function` | `### Changed`<br>`- 重構技能編譯管線，提升模板遞迴展開效能。` |
-| `wip: update stuff` | 忽略內部中間過渡 commit，僅提煉最終對外具體變更。 |
+| 原始 Git Commit（禁止直接照搬） | 分類 | Keep a Changelog 條目範例 |
+| :--- | :--- | :--- |
+| `fix: change regex in utils.py line 42` | `Fixed` | `- 修復包含特殊字元的路徑解析失敗問題。` |
+| `feat: add adr-writing/SKILL.md and tests` | `Added` | `- 新增架構決策紀錄（ADR）撰寫技能，支援 5 態生命週期與三大門檻檢核。` |
+| `refactor: extract helper function` | `Changed` | `- 重構技能編譯管線，提升模板遞迴展開效能。` |
+| `wip: update stuff` | （略過） | 忽略內部中間過渡 commit，僅提煉最終對外具體變更。 |
 
 ---
 
