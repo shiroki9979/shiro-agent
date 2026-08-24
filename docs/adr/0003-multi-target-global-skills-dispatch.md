@@ -14,7 +14,7 @@
 
 ## 2. Decision
 
-在 [scripts/build.py](file:///home/myuser/repos/shiro-agent/scripts/build.py) 的部署邏輯中，將編譯聚合後的全部技能同時派發（實體複製）至所有支援的目標全域路徑（`~/.agents/skills/`、`~/.gemini/config/skills/`、`~/.claude/skills/`、`~/.cursor/skills/`），並在覆蓋現有檔案前自動產生 `.bak` 備份。
+在 [scripts/build.py](../../scripts/build.py) 的部署邏輯中，將編譯聚合後的全部技能同時派發（實體複製）至所有支援的目標全域路徑（`~/.agents/skills/`、`~/.gemini/config/skills/`、`~/.claude/skills/`、`~/.cursor/skills/`），並在覆蓋現有檔案前自動產生 `.bak` 備份。
 
 ### Rationale & Alternatives Considered
 
@@ -30,7 +30,7 @@
 
 ## 4. Compliance
 
-- [tests/test_build.py](file:///home/myuser/repos/shiro-agent/tests/test_build.py) 包含 `test_compile_and_deploy_dry_run` 與 `test_compile_and_deploy_with_backup`，確保多目標派發與備份邏輯正確。
+- [tests/test_build.py](../../tests/test_build.py) 包含 `test_compile_and_deploy_dry_run` 與 `test_compile_and_deploy_with_backup`，確保多目標派發與備份邏輯正確。
 - 執行 `make deploy`（或 `make dry-run`）可檢驗部署操作皆正確指向各平台全域目錄。
 
 ## 5. Notes

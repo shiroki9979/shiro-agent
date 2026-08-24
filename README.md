@@ -17,7 +17,9 @@ shiro-agent/
 │   ├── cursor/               # Cursor 設定 (rules/mdc, settings)
 │   └── claude/               # Claude Code / Desktop 設定 (CLAUDE.md, mcp)
 ├── docs/                     # 專案架構文件與決策記錄
-│   └── adr/                  # 架構決策記錄 (Architecture Decision Records)
+│   ├── adr/                  # 架構決策記錄 (Architecture Decision Records)
+│   ├── agent-skill-paths-research.md # 各平台 Skills 探索路徑研究
+│   └── third-party-skills.md # 第三方 Agent Skills 功能與架構參考手冊
 ├── shared/                   # 跨 Agent 共用規範 (Single Source of Truth)
 │   ├── identity.md           # 個人身分、角色與語言回覆偏好
 │   ├── coding-style.md       # Clean Code, DRY, SOLID, 測試規範
@@ -37,7 +39,7 @@ shiro-agent/
 
 ## 快速開始
 
-本專案使用 [`uv`](https://github.com/astral-sh/uv) 進行環境與執行管理，並提供 [`Makefile`](file:///home/shiro/repos/shiro-agent/Makefile) 作為便捷指令入口。
+本專案使用 [`uv`](https://github.com/astral-sh/uv) 進行環境與執行管理，並提供 [`Makefile`](Makefile) 作為便捷指令入口。
 
 ### 快捷指令 (Makefile)
 
@@ -95,11 +97,13 @@ uv run python scripts/build.py --target cursor --deploy
 ### 3. Agent Skills 管理
 
 #### 自建技能（Custom Skills）
+
 - 建立於 `custom-skills/<skill-name>/SKILL.md`。
 - 支援在 Markdown 檔案內使用 `<!-- INCLUDE:shared/coding-style.md -->` 等標籤引用共用規範。
 - 執行 `make build` 或 `make deploy` 時會自動進行同名衝突檢查與模板展開，並聚合至 `dist/.agents/skills/` 與全域環境。
 
 #### 第三方技能（Third-party Skills）
+
 全面相容社群標準 Agent Skills CLI（`npx skills`）生態：
 
 ```bash
