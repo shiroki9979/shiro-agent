@@ -31,7 +31,7 @@
 ## 4. Compliance
 
 - 專案根目錄必須維持 `skills-lock.json` 與 `.agents/skills/` 一致性。
-- 透過 [Makefile](file:///home/myuser/repos/shiro-agent/Makefile) 提供快捷指令（`make skills-list`、`make skills-add`、`make skills-update`）統一操作介面。
+- 透過 [Makefile](../../Makefile) 提供快捷指令（`make skills-list`、`make skills-add`、`make skills-update`）統一操作介面。
 - CI / Code Review 檢驗第三方技能是否皆由 `skills-lock.json` 記錄且無手動修改。
 
 ## 5. Notes

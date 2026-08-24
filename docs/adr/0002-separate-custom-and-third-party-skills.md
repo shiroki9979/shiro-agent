@@ -30,9 +30,9 @@
 
 ## 4. Compliance
 
-- [tests/test_build.py](file:///home/myuser/repos/shiro-agent/tests/test_build.py) 包含 `test_compile_skills_aggregates_custom_and_third_party` 與 `test_compile_skills_collision_error` 單元測試，嚴格驗證聚合邏輯與重名防護。
+- [tests/test_build.py](../../tests/test_build.py) 包含 `test_compile_skills_aggregates_custom_and_third_party` 與 `test_compile_skills_collision_error` 單元測試，嚴格驗證聚合邏輯與重名防護。
 - 執行 `make test` 與 `make build` 確保編譯與測試通過。
 
 ## 5. Notes
 
-- **實作與遷移紀錄**：於 commit `332c98b` 實作 `custom-skills/` 與 [scripts/build.py](file:///home/myuser/repos/shiro-agent/scripts/build.py) 聚合管線。
+- **實作與遷移紀錄**：於 commit `332c98b` 實作 `custom-skills/` 與 [scripts/build.py](../../scripts/build.py) 聚合管線。
