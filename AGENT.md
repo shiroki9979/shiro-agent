@@ -6,11 +6,11 @@
 
 ## 核心架構與單一真實來源 (Single Source of Truth)
 
-- **共用規範**：[shared/](file:///home/myuser/repos/shiro-agent/shared) 為規範唯一修改點，包含 [identity.md](file:///home/myuser/repos/shiro-agent/shared/identity.md)、[coding-style.md](file:///home/myuser/repos/shiro-agent/shared/coding-style.md) 與 [workflows/](file:///home/myuser/repos/shiro-agent/shared/workflows)。嚴禁直接在 `configs/` 或 `dist/` 硬編碼修改共用規則。
+- **共用規範**：[shared/](file:///home/myuser/repos/shiro-agent/shared) 為規範唯一修改點，包含 [identity.md](file:///home/myuser/repos/shiro-agent/shared/identity.md)、[coding-style.md](file:///home/myuser/repos/shiro-agent/shared/coding-style.md) 與 [workflows/](file:///home/myuser/repos/shiro-agent/shared/workflows)。主標題採用 `##`（H2）以適配入口模板 `# Rules` 的單一 H1 結構。嚴禁直接在 `configs/` 或 `dist/` 硬編碼修改共用規則。
 - **自建技能**：[custom-skills/](file:///home/myuser/repos/shiro-agent/custom-skills)，每個技能必須包含 `SKILL.md`。支援以 `<!-- INCLUDE:shared/... -->` 標籤動態注入共用規範。
 - **第三方技能**：[.agents/skills/](file:///home/myuser/repos/shiro-agent/.agents/skills) 與 [skills-lock.json](file:///home/myuser/repos/shiro-agent/skills-lock.json)，遵循社群標準 CLI（`npx skills`）管理。
 - **目標設定**：[configs/](file:///home/myuser/repos/shiro-agent/configs) 存放針對各 Agent 的入口設定與特定設定檔（`antigravity/`、`cursor/`、`claude/`）。
-- **架構決策與術語**：術語遵循 [CONTEXT.md](file:///home/myuser/repos/shiro-agent/CONTEXT.md)，重大架構決策記錄於 [docs/adr/](file:///home/myuser/repos/shiro-agent/docs/adr)。
+- **架構決策與術語**：術語遵循 [CONTEXT.md](file:///home/myuser/repos/shiro-agent/CONTEXT.md)，重大架構決策依循 [adr-writing](file:///home/myuser/repos/shiro-agent/custom-skills/adr-writing/SKILL.md) 規範記錄於 [docs/adr/](file:///home/myuser/repos/shiro-agent/docs/adr)。
 
 ---
 
@@ -34,10 +34,12 @@
    - 技能描述（`description`）為觸發路徑之 Context Pointer，語句首字前置關鍵動詞或領域名詞，精確定義適用情境。
    - 遵守漸進式揭露（Progressive Disclosure）：高頻或共通指引留在本體，邊界與深入參考拆分至獨立文件。
    - 自建技能（`custom-skills/`）與第三方技能（`.agents/skills/`）目錄名稱不得衝突。
-2. **測試與品質把關**：
+2. **架構決策紀錄 (ADR)**：
+   - 提議或新增 ADR 須依循 [adr-writing](file:///home/myuser/repos/shiro-agent/custom-skills/adr-writing/SKILL.md) 滿足「難以逆轉、無脈絡下令人意外、源自真實取捨」三大門檻，並落實 5 態生命週期與雙向關聯。
+3. **測試與品質把關**：
    - 修改 [scripts/build.py](file:///home/myuser/repos/shiro-agent/scripts/build.py) 或核心編譯邏輯時，須遵循 TDD 流程並同步於 [tests/test_build.py](file:///home/myuser/repos/shiro-agent/tests/test_build.py) 新增/維護測試案例。
    - 提交任何變更前，一律執行 `make test` 確保測試通過。
-3. **溝通與行為原則**（詳見 [shared/identity.md](file:///home/myuser/repos/shiro-agent/shared/identity.md)）：
+4. **溝通與行為原則**（詳見 [shared/identity.md](file:///home/myuser/repos/shiro-agent/shared/identity.md)）：
    - 預設使用正體中文回覆。
    - 保持客觀、簡潔、直接切入重點；不使用表情符號。
    - 遇架構決策或技術選型時，主動列出各方案的取捨（優點、成本、風險、適用情境）。
