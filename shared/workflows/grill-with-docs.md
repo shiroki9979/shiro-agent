@@ -1,13 +1,13 @@
-# Workflow: Grill With Docs
+## Workflow: Grill With Docs
 
-## Trigger
+### Trigger
 - 使用者要求在檢驗計畫、設計或決策的同時產出文件，或使用 grill-with-docs 等觸發詞。
 
-## Protocol
+### Protocol
 - 沿用 Grill Me 的決策推進流程。
 - 決策落定後即時同步更新文件，不批次延後。
 
-## Documentation Standards
+### Documentation Standards
 - **CONTEXT.md**:
   - 術語一經確認即寫入 glossary。
   - 挑戰與既有定義衝突或模糊用語，以具體情境進行壓力測試。
