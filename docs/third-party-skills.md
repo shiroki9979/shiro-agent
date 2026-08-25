@@ -1,15 +1,15 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-08-24  
+最後更新：2026-08-25  
 
-本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 37 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
+本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 38 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 ---
 
 ## 1. 技能總覽與分類架構
 
-目前的 37 個第三方技能主要源自 `mattpocock/skills`（36 個）與 `vercel-labs/skills`（1 個 `find-skills`），依軟體開發生命週期與功能定位分為 9 大類別：
+目前的 38 個第三方技能主要源自 `mattpocock/skills`（36 個）、`vercel-labs/skills`（1 個 `find-skills`）與 `anthropics/skills`（1 個 `frontend-design`），依軟體開發生命週期與功能定位分為 9 大類別：
 
 | 分類領域 | 包含技能 | 核心功能摘要 |
 | :--- | :--- | :--- |
@@ -18,7 +18,7 @@
 | **3. 宏觀規劃與迷霧探索** | [`wayfinder`](../.agents/skills/wayfinder/SKILL.md) | 超大型任務決策地圖（Map）與決策工單驅散戰爭迷霧 |
 | **4. 領域建模與架構設計** | [`domain-modeling`](../.agents/skills/domain-modeling/SKILL.md), [`codebase-design`](../.agents/skills/codebase-design/SKILL.md), [`improve-codebase-architecture`](../.agents/skills/improve-codebase-architecture/SKILL.md), [`setup-ts-deep-modules`](../.agents/skills/setup-ts-deep-modules/SKILL.md) | 領域語言收斂與 ADR 門檻、深模組（Deep Module）設計詞彙、視覺化架構報告、TypeScript 邊界隔離配置 |
 | **5. 規格制定與工單拆分** | [`to-spec`](../.agents/skills/to-spec/SKILL.md), [`to-tickets`](../.agents/skills/to-tickets/SKILL.md) | 對話無訪談綜合規格書、Tracer-bullet 垂直切片與阻擋依賴工單拆解 |
-| **6. 開發實作與測試驅動** | [`implement`](../.agents/skills/implement/SKILL.md), [`implement-spec`](../.agents/skills/implement-spec/SKILL.md), [`tdd`](../.agents/skills/tdd/SKILL.md), [`prototype`](../.agents/skills/prototype/SKILL.md), [`migrate-to-shoehorn`](../.agents/skills/migrate-to-shoehorn/SKILL.md) | 單 Session/多 Agent 並行實作、TDD 垂直切片、邏輯與 UI 拋棄式原型、測試型別斷言遷移 |
+| **6. 開發實作與測試驅動** | [`implement`](../.agents/skills/implement/SKILL.md), [`implement-spec`](../.agents/skills/implement-spec/SKILL.md), [`tdd`](../.agents/skills/tdd/SKILL.md), [`prototype`](../.agents/skills/prototype/SKILL.md), [`migrate-to-shoehorn`](../.agents/skills/migrate-to-shoehorn/SKILL.md), [`frontend-design`](../.agents/skills/frontend-design/SKILL.md) | 單 Session/多 Agent 並行實作、TDD 垂直切片、邏輯與 UI 拋棄式原型、測試型別斷言遷移、反模板化前端視覺與排版設計 |
 | **7. 程式碼審查與除錯維護** | [`code-review`](../.agents/skills/code-review/SKILL.md), [`diagnosing-bugs`](../.agents/skills/diagnosing-bugs/SKILL.md), [`resolving-merge-conflicts`](../.agents/skills/resolving-merge-conflicts/SKILL.md) | 規範與需求雙軸並行 Code Review、頑固 Bug 與效能回歸診斷閉環、Git 意圖衝突解決 |
 | **8. 工單分流與儲存庫配置** | [`setup-matt-pocock-skills`](../.agents/skills/setup-matt-pocock-skills/SKILL.md), [`triage`](../.agents/skills/triage/SKILL.md) | 儲存庫 Issue Tracker 與標籤初始化配置、議題與外部 PR 狀態機分流 |
 | **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲（探索碎片/形塑結構/節奏鋪墊）、Git 防護鉤子、Pre-commit 與練習題骨架 |
@@ -201,6 +201,15 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 - **來源**：`mattpocock/skills` (`skills/misc/migrate-to-shoehorn/`)
 - **觸發情境**：測試程式碼充斥 `as Type` 或 `as unknown as Type` 假資料斷言時。
 - **功能描述**：安裝並遷移至 `@total-typescript/shoehorn`。將局部型別模擬改為 `fromPartial()`，將故意出錯的測試資料改為 `fromAny()`，確保僅在測試範圍內安全模擬型別。
+
+#### [`frontend-design`](../.agents/skills/frontend-design/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/frontend-design/`)
+- **觸發情境**：建立新 UI 或重構現有介面，需要具備辨識度、量身定制之視覺風格、排版與字體設計時。
+- **功能描述**：反模板化（Anti-templated）前端視覺設計指引。核心要素包括：
+  - **主題收斂**：在設計前明確鎖定主題本質、受眾與單一核心任務，由業務領域名詞推導視覺語彙。
+  - **設計原則**：Hero 區塊作為論點、字型承載個性（Display / Body 搭配）、結構即資訊（避免無意義序號裝飾）、克制使用動態微互動與高維度文案。
+  - **兩階段規劃**：第一階段規劃精簡 Token 系統（4–6 色彩 Palette、字型組合、ASCII Wireframe 版面、Signature 記憶點）；第二階段自我審查並剔除 AI 常見預設套路後再行實作。
 
 ---
 
