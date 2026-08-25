@@ -43,3 +43,19 @@
    - 預設使用正體中文回覆。
    - 保持客觀、簡潔、直接切入重點；不使用表情符號。
    - 遇架構決策或技術選型時，主動列出各方案的取捨（優點、成本、風險、適用情境）。
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs for this repo live as GitHub issues (`ShirokiXue/shiro-agent`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The default 5 canonical triage roles mapped 1:1 (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout (`CONTEXT.md` + `docs/adr/` at repo root). See `docs/agents/domain.md`.

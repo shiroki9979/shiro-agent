@@ -30,7 +30,7 @@ description: 檢查專案程式碼現況並同步更新文件。掃描模組介�
 
 掃描時優先自動探測以下路徑下的所有 Markdown（`.md`、`.mdx`、`.mdc`）文件：
 
-- **根目錄標準文件**：`README.md`、`AGENT.md`、`CONTRIBUTING.md`、`DEVELOPMENT.md`、`SECURITY.md`。
+- **根目錄標準文件**：`README.md`、`AGENTS.md`、`CONTRIBUTING.md`、`DEVELOPMENT.md`、`SECURITY.md`。
 - **文件專用目錄**：`docs/`、`doc/`、`documentation/`、`guides/`。
 - **模組/子套件說明**：各子套件目錄下的 `README.md`（例如 `src/*/README.md`、`packages/*/README.md`、`tests/README.md`）。
 
