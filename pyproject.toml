@@ -8,7 +8,6 @@ dependencies = []
 
 [project.scripts]
 shiro-build = "scripts.build:main"
-shiro-skills = "scripts.fetch_skills:main"
 
 [build-system]
 requires = ["hatchling"]
