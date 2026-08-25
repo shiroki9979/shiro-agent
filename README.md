@@ -18,6 +18,7 @@ shiro-agent/
 │   └── claude/               # Claude Code / Desktop 設定 (CLAUDE.md, mcp)
 ├── docs/                     # 專案架構文件與決策記錄
 │   ├── adr/                  # 架構決策記錄 (Architecture Decision Records)
+│   ├── agents/               # Agent 工作流與儲存庫規範 (Issue Tracker, Triage, Domain)
 │   ├── agent-skill-paths-research.md # 各平台 Skills 探索路徑研究
 │   └── third-party-skills.md # 第三方 Agent Skills 功能與架構參考手冊
 ├── shared/                   # 跨 Agent 共用規範 (Single Source of Truth)
@@ -29,6 +30,8 @@ shiro-agent/
 ├── scripts/                  # 編譯與部署工具
 │   └── build.py              # 模板展開、技能聚合與部署腳本
 ├── tests/                    # 單元測試
+├── AGENTS.md                 # 專案 Agent 開發與行為指引
+├── CHANGELOG.md              # 專案更新與版本日誌
 ├── CONTEXT.md                # 領域術語表 (Domain Language & Glossary)
 ├── skills-lock.json          # 第三方 Skills 來源、雜湊與鎖定檔
 ├── pyproject.toml            # uv / Python 專案定義
