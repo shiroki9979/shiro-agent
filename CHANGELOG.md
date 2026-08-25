@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 將根目錄 `AGENT.md` 重命名為標準 `AGENTS.md` 並補全 `## Agent skills` 指標設定。
 - 同步更新 `README.md` 目錄結構與 `docs/third-party-skills.md` 技能清單（共 38 個）。
+- 於 `prepare-commit` 自建技能中新增文件同步閉環（`sync-docs`）檢核規範與前置建議。
 
 ### Fixed
 

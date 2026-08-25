@@ -1,6 +1,6 @@
 ---
 name: prepare-commit
-description: 準備 Git 提交前的工作流程。掃描變更、清理 Notebook 輸出、規劃 Branch 分支、分析 Commit 拆分策略、撰寫 CHANGELOG 條目與 Conventional Commit 訊息，並輸出安全的執行指令建議。在 git commit 前、準備提交、review 變更或規劃 branch 時使用。
+description: 準備 Git 提交前的工作流程。掃描變更、清理 Notebook 輸出、檢核文件同步狀態（sync-docs）、規劃 Branch 分支、分析 Commit 拆分策略、撰寫 CHANGELOG 條目與 Conventional Commit 訊息，並輸出安全的執行指令建議。在 git commit 前、準備提交、review 變更或規劃 branch 時使用。
 ---
 
 # 提交前準備工作流程（Prepare Commit）
@@ -15,6 +15,7 @@ description: 準備 Git 提交前的工作流程。掃描變更、清理 Noteboo
 2. **原子性提交（Atomic Commits）**：每個 Commit 應代表一個單一且完整的邏輯變更。
 3. **主線保護（Mainline Protection）**：避免直接在 `main` 或 `master` 主線上進行實質程式碼提交，強制引導切出語意明確的 Topic Branch。
 4. **人本日誌與規範提交（Keep a Changelog & Conventional Commits）**：日誌與 Commit 訊息皆以人類可讀為核心，清楚交代變更意圖。
+5. **文件同步閉環（Documentation Sync Guardrail）**：當變更涉及公開介面、CLI 指令、設定檔或目錄架構時，依循 `sync-docs` 規範先確認專案技術文件同步狀態，確保程式碼與文件一同納入原子提交閉環。
 
 ---
 
@@ -61,6 +62,7 @@ git branch -a
 - **變更類型**：新功能（feat）、缺陷修復（fix）、重構（refactor）、文件（docs）、測試（test）、依賴/建置（chore）、效能（perf）。
 - **影響模組 / Scope**：依專案架構分組（例如 `src/`、`packages/`、`configs/`、`tests/`、`shared/`）。
 - **內聚關聯**：哪些檔案屬於同一功能閉環，哪些為獨立修改。
+- **文件同步檢核（Docs Sync Check）**：若變更涉及對外 API 簽名、CLI 指令、設定欄位或目錄架構調整，且尚未同步更新相關文件（如 `README.md`、`docs/`），提醒使用者優先執行 `/sync-docs` 進行文件同步，避免產生落後或失效文件。
 
 ---
 
