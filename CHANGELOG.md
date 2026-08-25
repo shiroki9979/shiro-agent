@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-25
+
 ### Added
 
 - 新增第三方 Agent Skills 功能與架構參考手冊（`docs/third-party-skills.md`）。
@@ -25,4 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 校正專案技術文件（`AGENTS.md`、`README.md`）與架構決策紀錄（`docs/adr/`）內部之相對路徑連結。
 - 修復 Markdownlint 格式、內嵌 HTML 與標題間距問題（`MD022`、`MD032`、`MD033`）。
 
-[Unreleased]: https://github.com/ShirokiXue/shiro-agent/commits/main
+[Unreleased]: https://github.com/ShirokiXue/shiro-agent/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ShirokiXue/shiro-agent/releases/tag/v0.1.0
