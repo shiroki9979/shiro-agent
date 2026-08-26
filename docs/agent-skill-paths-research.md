@@ -68,8 +68,7 @@
 ## 3. 對 `shiro-agent` 部署架構之結論與建議
 
 1. **Skills 統一分發策略**：
-   - 目前 `shiro-agent` 將編譯後的 Skills 部署至全域 `~/.agents/skills/`，可被 Antigravity（作為標準 workspace/global agent 路徑）與 Agent Skills CLI 原生識別。
-   - 若需讓 Claude Code 全域直接讀取，可考慮在 `scripts/build.py` 同步派發或建立 Symlink 至 `~/.claude/skills/`。
+   - `scripts/build.py` 將編譯聚合後的 Skills 實體複製至 `~/.agents/skills/`、`~/.gemini/config/skills/`、`~/.claude/skills/` 與 `~/.cursor/skills/`（見 [ADR-0003](adr/0003-multi-target-global-skills-dispatch.md)），各平台零配置即可探索。
 2. **Rules 專屬分發策略**：
    - Antigravity 部署至 `~/.gemini/config/rules/`。
    - Cursor 部署至 `~/.cursor/rules/` 或專案 `.cursor/rules/`。
