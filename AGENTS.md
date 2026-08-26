@@ -25,6 +25,7 @@
 | **預覽部署** | `make dry-run` | 模擬編譯與部署流程 |
 | **部署發布** | `make deploy` | 編譯並同步至全域系統路徑（`~/.agents`, `~/.gemini/config`, `~/.cursor`, `~/.claude`），自動產生 `.bak` |
 | **技能管理** | `make skills-list`, `make skills-add PKG=<source>`, `make skills-update` | 管理與更新第三方 Agent Skills |
+| **版本發布** | `make release TAG=vX.Y.Z` | 執行測試後建立註解 Git Tag；需另行 `git push origin <tag>` |
 
 ---
 

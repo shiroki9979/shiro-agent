@@ -1,15 +1,15 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-08-25  
+最後更新：2026-08-26  
 
-本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 38 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
+本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 53 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 ---
 
 ## 1. 技能總覽與分類架構
 
-目前的 38 個第三方技能主要源自 `mattpocock/skills`（36 個）、`vercel-labs/skills`（1 個 `find-skills`）與 `anthropics/skills`（1 個 `frontend-design`），依軟體開發生命週期與功能定位分為 9 大類別：
+目前的 53 個第三方技能主要源自 `mattpocock/skills`（36 個）、`anthropics/skills`（16 個）與 `vercel-labs/skills`（1 個 `find-skills`），依軟體開發生命週期與功能定位分為 11 大類別：
 
 | 分類領域 | 包含技能 | 核心功能摘要 |
 | :--- | :--- | :--- |
@@ -18,10 +18,12 @@
 | **3. 宏觀規劃與迷霧探索** | [`wayfinder`](../.agents/skills/wayfinder/SKILL.md) | 超大型任務決策地圖（Map）與決策工單驅散戰爭迷霧 |
 | **4. 領域建模與架構設計** | [`domain-modeling`](../.agents/skills/domain-modeling/SKILL.md), [`codebase-design`](../.agents/skills/codebase-design/SKILL.md), [`improve-codebase-architecture`](../.agents/skills/improve-codebase-architecture/SKILL.md), [`setup-ts-deep-modules`](../.agents/skills/setup-ts-deep-modules/SKILL.md) | 領域語言收斂與 ADR 門檻、深模組（Deep Module）設計詞彙、視覺化架構報告、TypeScript 邊界隔離配置 |
 | **5. 規格制定與工單拆分** | [`to-spec`](../.agents/skills/to-spec/SKILL.md), [`to-tickets`](../.agents/skills/to-tickets/SKILL.md) | 對話無訪談綜合規格書、Tracer-bullet 垂直切片與阻擋依賴工單拆解 |
-| **6. 開發實作與測試驅動** | [`implement`](../.agents/skills/implement/SKILL.md), [`implement-spec`](../.agents/skills/implement-spec/SKILL.md), [`tdd`](../.agents/skills/tdd/SKILL.md), [`prototype`](../.agents/skills/prototype/SKILL.md), [`migrate-to-shoehorn`](../.agents/skills/migrate-to-shoehorn/SKILL.md), [`frontend-design`](../.agents/skills/frontend-design/SKILL.md) | 單 Session/多 Agent 並行實作、TDD 垂直切片、邏輯與 UI 拋棄式原型、測試型別斷言遷移、反模板化前端視覺與排版設計 |
+| **6. 開發實作與測試驅動** | [`implement`](../.agents/skills/implement/SKILL.md), [`implement-spec`](../.agents/skills/implement-spec/SKILL.md), [`tdd`](../.agents/skills/tdd/SKILL.md), [`prototype`](../.agents/skills/prototype/SKILL.md), [`migrate-to-shoehorn`](../.agents/skills/migrate-to-shoehorn/SKILL.md), [`frontend-design`](../.agents/skills/frontend-design/SKILL.md), [`mcp-builder`](../.agents/skills/mcp-builder/SKILL.md), [`webapp-testing`](../.agents/skills/webapp-testing/SKILL.md), [`skill-creator`](../.agents/skills/skill-creator/SKILL.md) | 單 Session/多 Agent 並行實作、TDD 垂直切片、邏輯與 UI 拋棄式原型、測試型別斷言遷移、反模板化前端視覺、MCP Server 建構、Playwright 本機測試、Skill 撰寫與評測 |
 | **7. 程式碼審查與除錯維護** | [`code-review`](../.agents/skills/code-review/SKILL.md), [`diagnosing-bugs`](../.agents/skills/diagnosing-bugs/SKILL.md), [`resolving-merge-conflicts`](../.agents/skills/resolving-merge-conflicts/SKILL.md) | 規範與需求雙軸並行 Code Review、頑固 Bug 與效能回歸診斷閉環、Git 意圖衝突解決 |
 | **8. 工單分流與儲存庫配置** | [`setup-matt-pocock-skills`](../.agents/skills/setup-matt-pocock-skills/SKILL.md), [`triage`](../.agents/skills/triage/SKILL.md) | 儲存庫 Issue Tracker 與標籤初始化配置、議題與外部 PR 狀態機分流 |
-| **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲（探索碎片/形塑結構/節奏鋪墊）、Git 防護鉤子、Pre-commit 與練習題骨架 |
+| **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md), [`doc-coauthoring`](../.agents/skills/doc-coauthoring/SKILL.md), [`internal-comms`](../.agents/skills/internal-comms/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲、Git 防護鉤子、Pre-commit 與練習題骨架、結構化共寫文件、內部溝通套版 |
+| **10. 文件產製與編輯** | [`docx`](../.agents/skills/docx/SKILL.md), [`pptx`](../.agents/skills/pptx/SKILL.md), [`pdf`](../.agents/skills/pdf/SKILL.md), [`xlsx`](../.agents/skills/xlsx/SKILL.md) | Word／PowerPoint／PDF／試算表之建立、讀取、編輯與轉換（Anthropic source-available，非 Apache 2.0） |
+| **11. 視覺設計與生成產出** | [`canvas-design`](../.agents/skills/canvas-design/SKILL.md), [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md), [`theme-factory`](../.agents/skills/theme-factory/SKILL.md), [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md), [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md), [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md) | 靜態海報／藝術 PNG／PDF、p5.js 生成藝術、工件主題套用、Anthropic 品牌樣式、Slack GIF、複雜 React HTML artifact |
 
 ---
 
@@ -211,6 +213,24 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
   - **設計原則**：Hero 區塊作為論點、字型承載個性（Display / Body 搭配）、結構即資訊（避免無意義序號裝飾）、克制使用動態微互動與高維度文案。
   - **兩階段規劃**：第一階段規劃精簡 Token 系統（4–6 色彩 Palette、字型組合、ASCII Wireframe 版面、Signature 記憶點）；第二階段自我審查並剔除 AI 常見預設套路後再行實作。
 
+#### [`mcp-builder`](../.agents/skills/mcp-builder/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/mcp-builder/`)
+- **觸發情境**：建立 MCP Server 以讓 LLM 透過工具介接外部 API 或服務時（Python FastMCP 或 TypeScript MCP SDK）。
+- **功能描述**：四階段建構指引：研究與規劃（tool 命名、分頁、錯誤訊息）、實作（Zod／Pydantic schema、annotations）、審查測試（MCP Inspector）、撰寫唯讀評測題組。附 Python／TypeScript 實作參考與 evaluation 格式。
+
+#### [`webapp-testing`](../.agents/skills/webapp-testing/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/webapp-testing/`)
+- **觸發情境**：驗證本機 Web 應用前端行為、除錯 UI、擷取瀏覽器截圖或 console log 時。
+- **功能描述**：以 Python Playwright 撰寫自動化腳本。內建 `with_server.py` 管理開發伺服器生命週期；採偵察後行動（先等 `networkidle`、截圖／探勘 DOM，再以發現的 selector 執行動作）。
+
+#### [`skill-creator`](../.agents/skills/skill-creator/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/skill-creator/`)
+- **觸發情境**：從零建立 skill、修改既有 skill、跑 eval、或優化 `description` 觸發準確度時。
+- **功能描述**：指導 SKILL.md 結構（frontmatter 觸發、漸進式揭露、scripts／references／assets）、反覆評測與 description 優化，避免 under-trigger。
+
 ---
 
 ### 類別 7：程式碼審查與除錯維護 (Review, Debugging & Merge)
@@ -339,6 +359,88 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 - **來源**：`mattpocock/skills` (`skills/misc/scaffold-exercises/`)
 - **觸發情境**：建置課程章節或程式練習題結構時。
 - **功能描述**：依照標準命名（`XX-section/XX.YY-exercise/`）自動建立 `problem/`、`solution/`、`explainer/` 子目錄與 `readme.md` 模板，並通過 linter 檢查。
+
+#### [`doc-coauthoring`](../.agents/skills/doc-coauthoring/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/doc-coauthoring/`)
+- **觸發情境**：撰寫文件、提案、技術規格、決策文件、PRD 或 RFC 等結構化內容時。
+- **功能描述**：三階段共寫工作流：Context Gathering（補齊作者與模型的脈絡落差）→ Refinement & Structure（逐節腦力激盪、篩選、起草）→ Reader Testing（以無上下文的新對話驗證讀者能否正確解讀）。
+
+#### [`internal-comms`](../.agents/skills/internal-comms/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/internal-comms/`)
+- **觸發情境**：撰寫內部溝通稿，如 3P updates、公司電子報、FAQ、狀態報告、領導層更新、專案更新或事故報告時。
+- **功能描述**：依溝通類型載入 `examples/` 對應指引（`3p-updates.md`、`company-newsletter.md`、`faq-answers.md`、`general-comms.md`），套用該類型之格式、語氣與資訊蒐集步驟。
+
+---
+
+### 類別 10：文件產製與編輯 (Document Creation & Editing)
+
+此組技能為 Claude 文件能力之 source-available 參考實作，授權為 Anthropic proprietary（非 Apache 2.0）。
+
+#### [`docx`](../.agents/skills/docx/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/docx/`)
+- **觸發情境**：建立、讀取、編輯 Word 文件（`.docx`／`.dotx`），或產出含目錄、標題、頁碼、信頭的專業文件時。
+- **功能描述**：新建文件以 `docx`（npm）腳本產出；既有檔案採 unzip → 編輯 `word/document.xml` → zip。支援修訂追蹤、註解、找替與影像插入；產出後以 LibreOffice 轉 PDF 做視覺核對。
+
+#### [`pptx`](../.agents/skills/pptx/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/pptx/`)
+- **觸發情境**：任何涉及 `.pptx`／`.potx` 的工作：建立投影片或 pitch deck、讀取／擷取文字、編輯既有簡報、合併／拆分、處理講者備註或註解。
+- **功能描述**：新建 deck 以 `pptxgenjs` 腳本產出；既有檔案編輯 XML。可用 `markitdown` 讀內容，或以 thumbnail 腳本做視覺格狀預覽。
+
+#### [`pdf`](../.agents/skills/pdf/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/pdf/`)
+- **觸發情境**：讀取或擷取 PDF 文字／表格、合併拆分、旋轉、浮水印、填表、加解密、抽圖、掃描件 OCR，或產出新 PDF 時。
+- **功能描述**：以 `pypdf`、`pdfplumber`、`reportlab` 與 `qpdf`／Poppler 等工具對應常見操作；表單填寫另見 `FORMS.md`。
+
+#### [`xlsx`](../.agents/skills/xlsx/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/xlsx/`)
+- **觸發情境**：試算表為主要輸入或輸出時（`.xlsx`／`.csv`／`.tsv` 之建立、編輯、公式、圖表、髒資料清理或格式轉換）。
+- **功能描述**：以 `openpyxl`／`pandas` 操作；強制使用公式而非寫死結果，並以 LibreOffice 重算驗證。避開 LibreOffice 無法求值的新版 Excel 函數（如 `XLOOKUP`）。
+
+---
+
+### 類別 11：視覺設計與生成產出 (Visual Design & Generative Output)
+
+#### [`canvas-design`](../.agents/skills/canvas-design/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/canvas-design/`)
+- **觸發情境**：使用者要求海報、靜態藝術、設計或其他靜態視覺作品時。
+- **功能描述**：先產出設計哲學（`.md`），再以該哲學繪製單頁 PNG／PDF。文字極少、以構圖與空間傳達；附 `canvas-fonts` 字型資源。禁止複製既有藝術家作品。
+
+#### [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/algorithmic-art/`)
+- **觸發情境**：以程式碼、生成藝術、演算法藝術、流場或粒子系統創作時。
+- **功能描述**：先寫演算法哲學，再以 p5.js 實作為可互動的單一 HTML（seeded randomness、參數滑桿、種子巡覽）。禁止複製既有藝術家作品。
+
+#### [`theme-factory`](../.agents/skills/theme-factory/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/theme-factory/`)
+- **觸發情境**：為投影片、文件、報告或 HTML landing page 套用一致配色與字體時。
+- **功能描述**：內建 10 套主題（Ocean Depths、Midnight Galaxy 等），先展示 `theme-showcase.pdf` 供選擇後套用；亦可依描述現場產生新主題。
+
+#### [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/brand-guidelines/`)
+- **觸發情境**：產出物需套用 Anthropic 官方品牌色與字體時。
+- **功能描述**：套用 Anthropic 視覺識別（主色 `#141413`／`#faf9f5`、強調橘 `#d97757` 等；標題 Poppins、內文 Lora）。此為 Anthropic 品牌，非通用品牌系統。
+
+#### [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/slack-gif-creator/`)
+- **觸發情境**：製作給 Slack 使用的動畫 GIF（訊息或 emoji）時。
+- **功能描述**：提供 Slack 尺寸／色盤／時長限制、GIFBuilder 組幀與驗證、easing 與常見動畫概念（shake、pulse、bounce 等）。Emoji 建議 128×128、訊息 480×480。
+
+#### [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md)
+
+- **來源**：`anthropics/skills` (`skills/web-artifacts-builder/`)
+- **觸發情境**：製作需要狀態管理、路由或 shadcn/ui 的複雜 HTML artifact，而非單檔 HTML／JSX 時。
+- **功能描述**：以腳本初始化 React + TypeScript + Vite + Tailwind + shadcn/ui 專案，開發後打包為單一 `bundle.html`。刻意避開紫漸層、Inter 等常見 AI 預設審美。
 
 ---
 

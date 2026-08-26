@@ -54,6 +54,7 @@ make test          # 執行單元測試
 make skills-list   # 列出已安裝之第三方 Agent Skills
 make skills-add PKG=<source>  # 新增第三方 Agent Skill
 make skills-update # 更新第三方 Agent Skills
+make release TAG=vX.Y.Z  # 執行測試後建立註解 Git Tag（需另行推送）
 make help          # 檢視所有可用指令
 ```
 
@@ -75,7 +76,7 @@ uv run python scripts/build.py --target skills --dry-run
 
 ### 2. 部署至系統設定路徑
 
-執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份）：
+執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份；可用 `--no-backup` 停用）：
 
 - **Skills (多平台全域同步分發)**：聚合自有與第三方技能並同時派發至：
   - `~/.agents/skills/` 與 `~/.agents/skills-lock.json`（Agent Skills CLI）
@@ -112,6 +113,7 @@ uv run python scripts/build.py --target cursor --deploy
 ```bash
 # 使用 Makefile 新增
 make skills-add PKG=mattpocock/skills
+make skills-add PKG=anthropics/skills
 make skills-add PKG="https://github.com/vercel-labs/skills --skill find-skills"
 
 # 或直接使用原生 CLI
