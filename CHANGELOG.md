@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 新增 `eli5` 自建技能，暫存 Anthropic `claude-plugins-community` 的 HTML 圖解解釋技能副本（正式發布前）。
 - 引入 15 個源自 `anthropics/skills` 的第三方技能（文件處理、設計、MCP、內部溝通等），鎖定檔技能數由 38 增至 53（`skills-lock.json`、`.agents/skills/`）。
 
 ### Changed
