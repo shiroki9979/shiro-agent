@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- 精簡 `diataxis` 自建技能工作流程，移除強制輸出宣告區塊之要求（`custom-skills/diataxis/SKILL.md`）。
 - 同步更新 `docs/third-party-skills.md` 技能清單與分類（38 → 53；`anthropics/skills` 由 1 增至 16）。
 - 於 `README.md` 與 `AGENTS.md` 補上 `make release` 發布指令說明。
 - 校正 `docs/agent-skill-paths-research.md` 之 Skills 派發結論，使其與現行多目標全域部署一致。
