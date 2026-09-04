@@ -49,6 +49,12 @@
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
       "computedHash": "37b5e9c624513551da790b52864dc8c84bff996a6d03a380cc6facdcc0a88354"
     },
+    "diagram-design": {
+      "source": "cathrynlavery/diagram-design",
+      "sourceType": "github",
+      "skillPath": "skills/diagram-design/SKILL.md",
+      "computedHash": "ae2d24b670bf49478ded2da9098f00256a5b09adc283638abe8ffb5ae69c078d"
+    },
     "doc-coauthoring": {
       "source": "anthropics/skills",
       "sourceType": "github",

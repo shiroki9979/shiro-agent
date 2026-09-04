@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD024 -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -10,13 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - 新增 `after-code-review` 自建技能：將 `/code-review` 雙軸報告分流為下一 commit／開票草稿（`custom-skills/after-code-review/`）。
+- 引入 `diagram-design`（源自 `cathrynlavery/diagram-design`）第三方技能，鎖定檔技能數由 53 增至 54（`skills-lock.json`、`.agents/skills/diagram-design/`）。
 - 新增 `eli5` 自建技能，暫存 Anthropic `claude-plugins-community` 的 HTML 圖解解釋技能副本（正式發布前）。
 - 引入 15 個源自 `anthropics/skills` 的第三方技能（文件處理、設計、MCP、內部溝通等），鎖定檔技能數由 38 增至 53（`skills-lock.json`、`.agents/skills/`）。
 
 ### Changed
 
 - 精簡 `diataxis` 自建技能工作流程，移除強制輸出宣告區塊之要求（`custom-skills/diataxis/SKILL.md`）。
-- 同步更新 `docs/third-party-skills.md` 技能清單與分類（38 → 53；`anthropics/skills` 由 1 增至 16）。
+- 同步更新 `docs/third-party-skills.md` 技能清單與分類（53 → 54；新增 `cathrynlavery/diagram-design` 條目）。
 - 於 `README.md` 與 `AGENTS.md` 補上 `make release` 發布指令說明。
 - 校正 `docs/agent-skill-paths-research.md` 之 Skills 派發結論，使其與現行多目標全域部署一致。
 
