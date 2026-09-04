@@ -23,3 +23,6 @@ build/
 # Temporary
 tmp/
 
+# Skill-creator eval workspaces (sibling to skill dirs)
+custom-skills/*-workspace/
+
