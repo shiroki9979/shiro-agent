@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 精簡 `shared/identity.md`（移除 Profile 與程式碼輸出條目）與 `shared/coding-style.md`（移除原則口號與註解語言強制）。
+- 校正 GitHub 儲存庫連結至 `shiroki9979/shiro-agent`（`CHANGELOG.md`、`AGENTS.md`）。
 - 精簡 `diataxis` 自建技能工作流程，移除強制輸出宣告區塊之要求（`custom-skills/diataxis/SKILL.md`）。
 - 同步更新 `docs/third-party-skills.md` 技能清單與分類（53 → 54；新增 `cathrynlavery/diagram-design` 條目）。
 - 於 `README.md` 與 `AGENTS.md` 補上 `make release` 發布指令說明。
@@ -51,5 +52,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 校正專案技術文件（`AGENTS.md`、`README.md`）與架構決策紀錄（`docs/adr/`）內部之相對路徑連結。
 - 修復 Markdownlint 格式、內嵌 HTML 與標題間距問題（`MD022`、`MD032`、`MD033`）。
 
-[Unreleased]: https://github.com/ShirokiXue/shiro-agent/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/ShirokiXue/shiro-agent/releases/tag/v0.1.0
+[Unreleased]: https://github.com/shiroki9979/shiro-agent/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/shiroki9979/shiro-agent/releases/tag/v0.1.0
