@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 移除全域 always-on 的 Grill 工作流程摘要（`shared/workflows/grill-me.md`、`shared/workflows/grill-with-docs.md`）；質詢改由第三方技能 `grill-me` / `grill-with-docs` 觸發。
 
+### Fixed
+
+- 修正連續 INCLUDE 展開後 Markdown 標題緊貼上一段的問題（`configs/` 入口模板）。
+
 ## [0.1.0] - 2026-08-25
 
 ### Added
