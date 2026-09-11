@@ -6,7 +6,7 @@
 
 ## 核心架構與單一真實來源 (Single Source of Truth)
 
-- **共用規範**：[shared/](shared) 為規範唯一修改點，包含 [identity.md](shared/identity.md)、[coding-style.md](shared/coding-style.md) 與 [workflows/](shared/workflows)。主標題採用 `##`（H2）以適配入口模板 `# Rules` 的單一 H1 結構。嚴禁直接在 `configs/` 或 `dist/` 硬編碼修改共用規則。
+- **共用規範**：[shared/](shared) 為規範唯一修改點，包含 [identity.md](shared/identity.md) 與 [coding-style.md](shared/coding-style.md)。主標題採用 `##`（H2）以適配入口模板 `# Rules` 的單一 H1 結構。嚴禁直接在 `configs/` 或 `dist/` 硬編碼修改共用規則。
 - **自建技能**：[custom-skills/](custom-skills)，每個技能必須包含 `SKILL.md`。支援以 `<!-- INCLUDE:shared/... -->` 標籤動態注入共用規範。
 - **第三方技能**：[.agents/skills/](.agents/skills) 與 [skills-lock.json](skills-lock.json)，遵循社群標準 CLI（`npx skills`）管理；完整技能功能與架構請參閱 [docs/third-party-skills.md](docs/third-party-skills.md)。
 - **目標設定**：[configs/](configs) 存放針對各 Agent 的入口設定與特定設定檔（`antigravity/`、`cursor/`、`claude/`）。
