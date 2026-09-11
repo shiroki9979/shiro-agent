@@ -17,10 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- 精簡 `shared/identity.md`（移除 Profile 與程式碼輸出條目）與 `shared/coding-style.md`（移除原則口號與註解語言強制）。
 - 精簡 `diataxis` 自建技能工作流程，移除強制輸出宣告區塊之要求（`custom-skills/diataxis/SKILL.md`）。
 - 同步更新 `docs/third-party-skills.md` 技能清單與分類（53 → 54；新增 `cathrynlavery/diagram-design` 條目）。
 - 於 `README.md` 與 `AGENTS.md` 補上 `make release` 發布指令說明。
 - 校正 `docs/agent-skill-paths-research.md` 之 Skills 派發結論，使其與現行多目標全域部署一致。
+
+### Removed
+
+- 移除全域 always-on 的 Grill 工作流程摘要（`shared/workflows/grill-me.md`、`shared/workflows/grill-with-docs.md`）；質詢改由第三方技能 `grill-me` / `grill-with-docs` 觸發。
 
 ## [0.1.0] - 2026-08-25
 

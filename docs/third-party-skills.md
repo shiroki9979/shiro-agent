@@ -1,7 +1,7 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-09-03  
+最後更新：2026-09-11  
 本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 54 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 
@@ -443,5 +443,4 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 - **來源**：`cathrynlavery/diagram-design` (`skills/diagram-design/`)
 - **觸發情境**：使用者要求繪製架構圖、流程圖、時序圖、狀態機、資料模型等 39 種視覺圖表，或需重繪 draw.io / Mermaid 為獨立 HTML/SVG/PNG 時。
 - **技能鎖定檔**：[skills-lock.json](../skills-lock.json)（記錄各技能之來源儲存庫、相對路徑與 SHA256 雜湊值）。
-- **共用規範對照**：[shared/workflows/grill-me.md](../shared/workflows/grill-me.md) 與 [shared/workflows/grill-with-docs.md](../shared/workflows/grill-with-docs.md)。
 - **自建技能目錄**：[custom-skills/](../custom-skills/)（與第三方技能隔離，支援模板展開）。
