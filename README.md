@@ -23,10 +23,7 @@ shiro-agent/
 │   └── third-party-skills.md # 第三方 Agent Skills 功能與架構參考手冊
 ├── shared/                   # 跨 Agent 共用規範 (Single Source of Truth)
 │   ├── identity.md           # 個人身分、角色與語言回覆偏好
-│   ├── coding-style.md       # Clean Code, DRY, SOLID, 測試規範
-│   └── workflows/            # 通用工作流程
-│       ├── grill-me.md       # Grill Me 設計樹與邊界決策流程
-│       └── grill-with-docs.md# Grill With Docs 與架構決策 (ADR) 規範
+│   └── coding-style.md       # Clean Code, DRY, SOLID, 測試規範
 ├── scripts/                  # 編譯與部署工具
 │   └── build.py              # 模板展開、技能聚合與部署腳本
 ├── tests/                    # 單元測試
