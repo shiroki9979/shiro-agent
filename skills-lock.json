@@ -53,7 +53,7 @@
       "source": "cathrynlavery/diagram-design",
       "sourceType": "github",
       "skillPath": "skills/diagram-design/SKILL.md",
-      "computedHash": "ae2d24b670bf49478ded2da9098f00256a5b09adc283638abe8ffb5ae69c078d"
+      "computedHash": "e01adcceff753d259c534500d993512bf4d37301fa507cd45f2d4c3eaf4c6163"
     },
     "doc-coauthoring": {
       "source": "anthropics/skills",
@@ -83,7 +83,7 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
-      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+      "computedHash": "89496d5dd00f4810205f351759594fc2742bf8eea85a2f2b2d1de59f4bd91576"
     },
     "git-guardrails-claude-code": {
       "source": "mattpocock/skills",
