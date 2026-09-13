@@ -1,7 +1,7 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-09-11  
+最後更新：2026-09-13  
 本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 54 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 
@@ -20,7 +20,7 @@
 | **8. 工單分流與儲存庫配置** | [`setup-matt-pocock-skills`](../.agents/skills/setup-matt-pocock-skills/SKILL.md), [`triage`](../.agents/skills/triage/SKILL.md) | 儲存庫 Issue Tracker 與標籤初始化配置、議題與外部 PR 狀態機分流 |
 | **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md), [`doc-coauthoring`](../.agents/skills/doc-coauthoring/SKILL.md), [`internal-comms`](../.agents/skills/internal-comms/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲、Git 防護鉤子、Pre-commit 與練習題骨架、結構化共寫文件、內部溝通套版 |
 | **10. 文件產製與編輯** | [`docx`](../.agents/skills/docx/SKILL.md), [`pptx`](../.agents/skills/pptx/SKILL.md), [`pdf`](../.agents/skills/pdf/SKILL.md), [`xlsx`](../.agents/skills/xlsx/SKILL.md) | Word／PowerPoint／PDF／試算表之建立、讀取、編輯與轉換（Anthropic source-available，非 Apache 2.0） |
-| **11. 視覺設計與生成產出** | [`canvas-design`](../.agents/skills/canvas-design/SKILL.md), [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md), [`theme-factory`](../.agents/skills/theme-factory/SKILL.md), [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md), [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md), [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md), [`diagram-design`](../.agents/skills/diagram-design/SKILL.md) | 靜態海報／藝術 PNG／PDF、p5.js 生成藝術、工件主題套用、Anthropic 品牌樣式、Slack GIF、複雜 React HTML artifact、39 種編輯級系統架構與流程圖表（HTML/SVG） |
+| **11. 視覺設計與生成產出** | [`canvas-design`](../.agents/skills/canvas-design/SKILL.md), [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md), [`theme-factory`](../.agents/skills/theme-factory/SKILL.md), [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md), [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md), [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md), [`diagram-design`](../.agents/skills/diagram-design/SKILL.md) | 靜態海報／藝術 PNG／PDF、p5.js 生成藝術、工件主題套用、Anthropic 品牌樣式、Slack GIF、複雜 React HTML artifact、40 種編輯級系統架構與流程圖表（HTML/SVG） |
 
 ---
 
@@ -441,6 +441,6 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 #### [`diagram-design`](../.agents/skills/diagram-design/SKILL.md)
 
 - **來源**：`cathrynlavery/diagram-design` (`skills/diagram-design/`)
-- **觸發情境**：使用者要求繪製架構圖、流程圖、時序圖、狀態機、資料模型等 39 種視覺圖表，或需重繪 draw.io / Mermaid 為獨立 HTML/SVG/PNG 時。
+- **觸發情境**：使用者要求繪製架構圖、流程圖、時序圖、狀態機、資料模型等 40 種視覺圖表，或需重繪 draw.io / Mermaid / Excalidraw 為獨立 HTML/SVG/PNG 時。
 - **技能鎖定檔**：[skills-lock.json](../skills-lock.json)（記錄各技能之來源儲存庫、相對路徑與 SHA256 雜湊值）。
 - **自建技能目錄**：[custom-skills/](../custom-skills/)（與第三方技能隔離，支援模板展開）。
