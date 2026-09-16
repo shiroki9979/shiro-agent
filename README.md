@@ -1,6 +1,6 @@
 # shiro-agent
 
-個人多 Agent（Antigravity, Cursor, Claude 等）設定與 Skills 管理庫。
+個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
 透過 `shared/` 規範層維護單一真實來源（Single Source of Truth），並利用編譯/同步腳本自動展開並部署至各 Agent 全域設定或專案目錄。
 
@@ -14,6 +14,7 @@ shiro-agent/
 ├── .agents/skills/           # 第三方外部 Agent Skills (由 npx skills 管理)
 ├── configs/                  # 各 Agent 專屬設定與模板
 │   ├── antigravity/          # Antigravity 設定 (rules, mcp, hooks)
+│   ├── codex/                # Codex 全域指示 (AGENTS.md)
 │   ├── cursor/               # Cursor 設定 (rules/mdc, settings)
 │   └── claude/               # Claude Code / Desktop 設定 (CLAUDE.md, mcp)
 ├── docs/                     # 專案架構文件與決策記錄
@@ -45,7 +46,7 @@ shiro-agent/
 
 ```bash
 make build         # 編譯所有設定至 dist/ (聚合 custom-skills 與 .agents/skills)
-make deploy        # 編譯並部署至全域系統路徑 (~/.agents, ~/.gemini/config, ~/.cursor, ~/.claude)
+make deploy        # 編譯並部署至全域系統路徑 (~/.agents, ~/.gemini/config, ~/.cursor, ~/.claude, ~/.codex)
 make dry-run       # 預覽編譯與部署
 make test          # 執行單元測試
 make skills-list   # 列出已安裝之第三方 Agent Skills
@@ -67,7 +68,7 @@ uv run python scripts/build.py --dry-run
 # 或使用 Makefile
 make dry-run
 
-# 指定單一目標 (如 antigravity, cursor, claude, skills)
+# 指定單一目標 (如 antigravity, codex, cursor, claude, skills)
 uv run python scripts/build.py --target skills --dry-run
 ```
 
@@ -83,6 +84,9 @@ uv run python scripts/build.py --target skills --dry-run
 - **Antigravity Rules / Config**：`~/.gemini/config/rules/`、`mcp_config.json`、`hooks.json`
 - **Cursor Rules / Config**：`~/.cursor/rules/`、`settings.json`
 - **Claude Config**：`~/.claude/CLAUDE.md`、`mcp_config.json`
+- **Codex Instruction**：`~/.codex/AGENTS.md`（僅編譯 `shared/identity.md` 與 `shared/coding-style.md`；不管理 Codex command rules）
+
+Codex 使用既有的 `~/.agents/skills/` 作為全域 Skills 探索路徑，因此不會建立或同步 `~/.codex/skills/` 的重複副本。
 
 ```bash
 # 部署全部 Agent 設定與 Skills
@@ -92,6 +96,7 @@ make deploy
 
 # 部署指定 Agent 或 Skills
 uv run python scripts/build.py --target skills --deploy
+uv run python scripts/build.py --target codex --deploy
 uv run python scripts/build.py --target cursor --deploy
 ```
 
