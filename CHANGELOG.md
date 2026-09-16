@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Cursor Skills 改為僅部署至 `~/.agents/skills/`；不再建立 `~/.cursor/skills/` 重複副本。Antigravity 維持既有 legacy `agy` 的 `~/.gemini/config/` 部署基線。
 - 同步上游第三方技能：`diagram-design` 新增瀑布圖、Excalidraw 匯入與 CJK 字型支援；`frontend-design` 更新設計原則與反模板化指引，並將技能手冊圖表數由 39 改為 40（`skills-lock.json`、`.agents/skills/`、`docs/third-party-skills.md`）。
 - 精簡 `shared/identity.md`（移除 Profile 與程式碼輸出條目）與 `shared/coding-style.md`（移除原則口號與註解語言強制）。
 - 校正 GitHub 儲存庫連結至 `shiroki9979/shiro-agent`（`CHANGELOG.md`、`AGENTS.md`）。

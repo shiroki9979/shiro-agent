@@ -1,7 +1,7 @@
 # 各 Agent 平台之真實 User Skill 與 Rule 探索路徑研究報告
 
 > 建立日期：2026-08-23
-> 最後更新：2026-09-16
+> 最後更新：2026-09-17
 
 本文件調查並整理 Google Antigravity、Claude Code、Codex、Cursor 以及 Agent Skills 生態標準（`npx skills`）在全域（User-level / Global）與專案（Workspace-level / Project）層級之實體路徑與探索機制。
 
@@ -14,7 +14,7 @@
 | **Antigravity (AGY)** | `~/.gemini/config/skills/<name>/SKILL.md` | `~/.gemini/config/rules/*.md`<br>`~/.gemini/config/mcp_config.json` | `.agents/skills/<name>/SKILL.md`<br>（或 `.agent/`, `_agents/`） | `AGENTS.md`<br>`GEMINI.md`<br>`.agents/rules/*.md` |
 | **Claude Code** | `~/.claude/skills/<name>/SKILL.md` | `~/.claude/CLAUDE.md`<br>`~/.claude/mcp_config.json` | `.claude/skills/<name>/SKILL.md` | `CLAUDE.md` (專案根目錄) |
 | **Codex** | `~/.agents/skills/<name>/SKILL.md` | `~/.codex/AGENTS.md` | `.agents/skills/<name>/SKILL.md` | `AGENTS.md` (專案根目錄) |
-| **Cursor** | `~/.cursor/skills/<name>/SKILL.md`（選用） | Cursor Settings > Rules for AI<br>`~/.cursor/settings.json` | `.cursor/skills/<name>/SKILL.md` | `.cursor/rules/*.mdc`<br>`AGENTS.md` |
+| **Cursor** | `~/.agents/skills/<name>/SKILL.md`（本專案部署）<br>`~/.cursor/skills/<name>/SKILL.md`（Cloud Agents 選用） | Cursor Settings > Rules for AI<br>`~/.cursor/settings.json` | `.agents/skills/<name>/SKILL.md`<br>`.cursor/skills/<name>/SKILL.md` | `.cursor/rules/*.mdc`<br>`AGENTS.md` |
 | **Agent Skills (CLI)** | `~/.agents/skills/<name>/SKILL.md` | `~/.agents/.skill-lock.json` | `.agents/skills/<name>/SKILL.md` | `skills-lock.json` |
 
 ---
@@ -67,10 +67,10 @@
 
 - **全域配置路徑**：
   - **Rules for AI**：Cursor 偏好儲存於內部組態資料庫，並透過帳號雲端同步（於 `Settings > General > Rules for AI` 中管理）。
-  - **全域 Skills**：`~/.cursor/skills/<skill-name>/SKILL.md`（部分版本支援，但以專案層級最穩定）。
+  - **全域 Skills**：本專案僅部署至 `~/.agents/skills/<skill-name>/SKILL.md`；Cursor 亦可探索該路徑。`~/.cursor/skills/` 僅保留給需要 Cloud Agents 同步的個別 Skills，避免同名重複載入。
 - **專案配置路徑 (Project Root)**：
   - **Rules**：`.cursor/rules/*.mdc`（Cursor 專屬 MDC 格式，內含 frontmatter 與 glob 匹配條件）以及相容 `AGENTS.md`、`.cursorrules`。
-  - **Skills**：`.cursor/skills/<skill-name>/SKILL.md`。
+  - **Skills**：`.agents/skills/<skill-name>/SKILL.md` 或 `.cursor/skills/<skill-name>/SKILL.md`。
 
 ---
 
@@ -84,7 +84,7 @@
 ## 3. 對 `shiro-agent` 部署架構之結論與建議
 
 1. **Skills 統一分發策略**：
-   - `scripts/build.py` 將編譯聚合後的 Skills 實體複製至 `~/.agents/skills/`、`~/.gemini/config/skills/`、`~/.claude/skills/` 與 `~/.cursor/skills/`（見 [ADR-0003](adr/0003-multi-target-global-skills-dispatch.md)），各平台零配置即可探索。
+   - `scripts/build.py` 將編譯聚合後的 Skills 實體複製至 `~/.agents/skills/`、`~/.gemini/config/skills/` 與 `~/.claude/skills/`。Cursor 直接探索 `~/.agents/skills/`，故不再同步至 `~/.cursor/skills/`，避免同名 Skills 重複載入。
 2. **Rules 專屬分發策略**：
    - Antigravity 部署至 `~/.gemini/config/rules/`。
    - Cursor 部署至 `~/.cursor/rules/` 或專案 `.cursor/rules/`。
