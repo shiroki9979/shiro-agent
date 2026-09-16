@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 同步上游第三方技能：`diagram-design` 新增瀑布圖、Excalidraw 匯入與 CJK 字型支援；`frontend-design` 更新設計原則與反模板化指引，並將技能手冊圖表數由 39 改為 40（`skills-lock.json`、`.agents/skills/`、`docs/third-party-skills.md`）。
 - 精簡 `shared/identity.md`（移除 Profile 與程式碼輸出條目）與 `shared/coding-style.md`（移除原則口號與註解語言強制）。
+- 校正 GitHub 儲存庫連結至 `shiroki9979/shiro-agent`（`CHANGELOG.md`、`AGENTS.md`）。
 - 精簡 `diataxis` 自建技能工作流程，移除強制輸出宣告區塊之要求（`custom-skills/diataxis/SKILL.md`）。
 - 同步更新 `docs/third-party-skills.md` 技能清單與分類（53 → 54；新增 `cathrynlavery/diagram-design` 條目）。
 - 於 `README.md` 與 `AGENTS.md` 補上 `make release` 發布指令說明。
@@ -27,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - 移除全域 always-on 的 Grill 工作流程摘要（`shared/workflows/grill-me.md`、`shared/workflows/grill-with-docs.md`）；質詢改由第三方技能 `grill-me` / `grill-with-docs` 觸發。
+
+### Fixed
+
+- 修正連續 INCLUDE 展開後 Markdown 標題緊貼上一段的問題（`configs/` 入口模板）。
 
 ## [0.1.0] - 2026-08-25
 
@@ -48,5 +53,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 校正專案技術文件（`AGENTS.md`、`README.md`）與架構決策紀錄（`docs/adr/`）內部之相對路徑連結。
 - 修復 Markdownlint 格式、內嵌 HTML 與標題間距問題（`MD022`、`MD032`、`MD033`）。
 
-[Unreleased]: https://github.com/ShirokiXue/shiro-agent/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/ShirokiXue/shiro-agent/releases/tag/v0.1.0
+[Unreleased]: https://github.com/shiroki9979/shiro-agent/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/shiroki9979/shiro-agent/releases/tag/v0.1.0
