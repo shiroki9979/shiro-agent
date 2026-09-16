@@ -1,7 +1,7 @@
 # shiro-agent
 
 > 建立日期：2026-08-22
-> 最後更新：2026-09-16
+> 最後更新：2026-09-17
 
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
@@ -79,11 +79,11 @@ uv run python scripts/build.py --target skills --dry-run
 
 執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份；可用 `--no-backup` 停用）：
 
-- **Skills (多平台全域同步分發)**：聚合自有與第三方技能並同時派發至：
+- **Skills（全域同步分發）**：聚合自有與第三方技能並派發至：
   - `~/.agents/skills/` 與 `~/.agents/skills-lock.json`（Agent Skills CLI）
   - `~/.gemini/config/skills/`（Antigravity）
   - `~/.claude/skills/`（Claude Code）
-  - `~/.cursor/skills/`（Cursor）
+  - Cursor 從既有的 `~/.agents/skills/` 探索，不建立 `~/.cursor/skills/` 重複副本；如需 Cloud Agents 同步，另由 Cursor 設定管理。
 - **Antigravity Rules / Config**：`~/.gemini/config/rules/`、`mcp_config.json`、`hooks.json`
 - **Cursor Rules / Config**：`~/.cursor/rules/`、`settings.json`
 - **Claude Config**：`~/.claude/CLAUDE.md`、`mcp_config.json`
