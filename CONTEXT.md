@@ -1,5 +1,8 @@
 # Shiro Agent
 
+> 建立日期：2026-08-23
+> 最後更新：2026-09-16
+
 跨開發環境之多 Agent 設定檔、共用行為規範與標準化 Agent Skills 的集中管理系統。
 
 ## 語言（Language）
@@ -25,8 +28,12 @@ _Avoid_: 設定（Setting）、偏好（Preference）、Dotfile
 _Avoid_: 基礎設定（Base config）、系統提示詞（System prompt）、全域指引（Global guideline）
 
 **Target Agent**:
-接收編譯後設定檔與 Skills 部署的目標 AI 開發平台（例如 Antigravity、Cursor 或 Claude）。
+接收編譯後設定檔與 Skills 部署的目標 AI 開發平台（例如 Antigravity、Codex、Cursor 或 Claude）。
 _Avoid_: 客戶端（Client）、工具（Tool）、環境（Environment）
+
+**Codex Instruction**:
+Codex 的持久行為規範文件，以 `AGENTS.md` 表示並部署至 Codex home。
+_Avoid_: Command Rule、Sandbox Policy
 
 **Skill Lock**:
 記錄已安裝 Skills 之確切來源、路徑與校驗雜湊值的依賴鎖定檔。

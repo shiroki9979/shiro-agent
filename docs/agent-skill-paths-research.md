@@ -1,6 +1,9 @@
 # 各 Agent 平台之真實 User Skill 與 Rule 探索路徑研究報告
 
-本文件調查並整理 Google Antigravity、Claude Code、Cursor 以及 Agent Skills 生態標準（`npx skills`）在全域（User-level / Global）與專案（Workspace-level / Project）層級之實體路徑與探索機制。
+> 建立日期：2026-08-23
+> 最後更新：2026-09-16
+
+本文件調查並整理 Google Antigravity、Claude Code、Codex、Cursor 以及 Agent Skills 生態標準（`npx skills`）在全域（User-level / Global）與專案（Workspace-level / Project）層級之實體路徑與探索機制。
 
 ---
 
@@ -10,6 +13,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Antigravity (AGY)** | `~/.gemini/config/skills/<name>/SKILL.md` | `~/.gemini/config/rules/*.md`<br>`~/.gemini/config/mcp_config.json` | `.agents/skills/<name>/SKILL.md`<br>（或 `.agent/`, `_agents/`） | `AGENTS.md`<br>`GEMINI.md`<br>`.agents/rules/*.md` |
 | **Claude Code** | `~/.claude/skills/<name>/SKILL.md` | `~/.claude/CLAUDE.md`<br>`~/.claude/mcp_config.json` | `.claude/skills/<name>/SKILL.md` | `CLAUDE.md` (專案根目錄) |
+| **Codex** | `~/.agents/skills/<name>/SKILL.md` | `~/.codex/AGENTS.md` | `.agents/skills/<name>/SKILL.md` | `AGENTS.md` (專案根目錄) |
 | **Cursor** | `~/.cursor/skills/<name>/SKILL.md`（選用） | Cursor Settings > Rules for AI<br>`~/.cursor/settings.json` | `.cursor/skills/<name>/SKILL.md` | `.cursor/rules/*.mdc`<br>`AGENTS.md` |
 | **Agent Skills (CLI)** | `~/.agents/skills/<name>/SKILL.md` | `~/.agents/.skill-lock.json` | `.agents/skills/<name>/SKILL.md` | `skills-lock.json` |
 
@@ -47,7 +51,19 @@
 
 ---
 
-### C. Cursor (IDE & Agent Mode)
+### C. Codex
+
+- **全域配置路徑 (Global User Root)**：`~/.codex/`
+  - **全域指示**：`~/.codex/AGENTS.md`，由 `configs/codex/AGENTS.md` 編譯。
+  - **Skills**：沿用 `~/.agents/skills/<skill-name>/SKILL.md`，不建立 `~/.codex/skills/` 重複副本。
+  - **Command rules**：不屬於本專案管理範圍，與行為指示分離。
+- **專案配置路徑 (Project Root)**：
+  - **Skills**：`.agents/skills/<skill-name>/SKILL.md`。
+  - **專案指引**：`AGENTS.md`；其內容維持專案特定，與全域指示依 Codex 的正常探索順序合併。
+
+---
+
+### D. Cursor (IDE & Agent Mode)
 
 - **全域配置路徑**：
   - **Rules for AI**：Cursor 偏好儲存於內部組態資料庫，並透過帳號雲端同步（於 `Settings > General > Rules for AI` 中管理）。
@@ -58,7 +74,7 @@
 
 ---
 
-### D. 社群標準 Agent Skills CLI (`npx skills`)
+### E. 社群標準 Agent Skills CLI (`npx skills`)
 
 - **全域安裝 (`-g`)**：`~/.agents/skills/<skill-name>/SKILL.md`，並產生 `~/.agents/.skill-lock.json`。
 - **專案本機安裝**：`./.agents/skills/<skill-name>/SKILL.md`，並產生 `./skills-lock.json`。
@@ -73,3 +89,4 @@
    - Antigravity 部署至 `~/.gemini/config/rules/`。
    - Cursor 部署至 `~/.cursor/rules/` 或專案 `.cursor/rules/`。
    - Claude 部署至 `~/.claude/CLAUDE.md`。
+   - Codex 部署至 `~/.codex/AGENTS.md`；Skills 維持由 `~/.agents/skills/` 提供，不新增 Codex 專屬 Skills 目的地，也不管理 command rules。

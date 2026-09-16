@@ -20,6 +20,7 @@ DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
     "antigravity": Path.home() / ".gemini" / "config",
     "cursor": Path.home() / ".cursor",
     "claude": Path.home() / ".claude",
+    "codex": Path.home() / ".codex",
 }
 
 
@@ -175,6 +176,19 @@ def compile_claude(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
     return pairs
 
 
+def compile_codex(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
+    """編譯 Codex 全域指示。"""
+    config_dir = repo_root / "configs" / "codex"
+    codex_instruction = config_dir / "AGENTS.md"
+
+    if not codex_instruction.exists():
+        return []
+
+    dest_file = out_dir / "codex" / "AGENTS.md"
+    process_file(codex_instruction, dest_file, repo_root)
+    return [(dest_file, DEFAULT_DEPLOY_PATHS["codex"] / "AGENTS.md")]
+
+
 def compile_targets(targets: List[str], repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
     """依指定目標列表編譯所有設定檔。"""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -185,6 +199,7 @@ def compile_targets(targets: List[str], repo_root: Path, out_dir: Path) -> List[
         "antigravity": compile_antigravity,
         "cursor": compile_cursor,
         "claude": compile_claude,
+        "codex": compile_codex,
     }
 
     selected = target_map.keys() if "all" in targets else targets
@@ -225,7 +240,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--target",
         nargs="+",
-        choices=["all", "skills", "antigravity", "cursor", "claude"],
+        choices=["all", "skills", "antigravity", "cursor", "claude", "codex"],
         default=["all"],
         help="Target configurations to compile/deploy (default: all)",
     )
