@@ -51,7 +51,7 @@
 
 ### Issue tracker
 
-Issues and specs for this repo live as GitHub issues (`ShirokiXue/shiro-agent`). See `docs/agents/issue-tracker.md`.
+Issues and specs for this repo live as GitHub issues (`shiroki9979/shiro-agent`). See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
