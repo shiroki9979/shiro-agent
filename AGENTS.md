@@ -1,5 +1,8 @@
 # Agent 指南：shiro-agent
 
+> 建立日期：2026-08-24
+> 最後更新：2026-09-16
+
 本專案為跨平台 AI 開發環境（Antigravity, Cursor, Claude 等）之設定檔、共用行為規範與 Agent Skills 集中管理庫。
 
 ---
