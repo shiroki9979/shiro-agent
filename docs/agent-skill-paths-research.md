@@ -1,5 +1,8 @@
 # 各 Agent 平台之真實 User Skill 與 Rule 探索路徑研究報告
 
+> 建立日期：2026-08-23
+> 最後更新：2026-09-16
+
 本文件調查並整理 Google Antigravity、Claude Code、Codex、Cursor 以及 Agent Skills 生態標準（`npx skills`）在全域（User-level / Global）與專案（Workspace-level / Project）層級之實體路徑與探索機制。
 
 ---
