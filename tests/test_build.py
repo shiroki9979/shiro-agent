@@ -25,6 +25,15 @@ class TestBuild(unittest.TestCase):
         # Create sample shared file
         self.identity_file = self.shared_dir / "identity.md"
         self.identity_file.write_text("# Identity\nName: White Hunag\n", encoding="utf-8")
+        self.coding_style_file = self.shared_dir / "coding-style.md"
+        self.coding_style_file.write_text("# Coding Style\nKeep it simple.\n", encoding="utf-8")
+
+        self.codex_config_dir = self.root_dir / "configs" / "codex"
+        self.codex_config_dir.mkdir(parents=True, exist_ok=True)
+        (self.codex_config_dir / "AGENTS.md").write_text(
+            "# Rules\n\n<!-- INCLUDE:shared/identity.md -->\n\n<!-- INCLUDE:shared/coding-style.md -->\n",
+            encoding="utf-8",
+        )
 
         # Create sample custom skills in custom-skills/
         self.custom_skill_dir = self.root_dir / "custom-skills" / "custom-skill"
@@ -66,6 +75,7 @@ class TestBuild(unittest.TestCase):
         for key in ["agents", "antigravity", "claude", "cursor"]:
             deploy_target = DEFAULT_DEPLOY_PATHS[key] / "skills" / "custom-skill" / "SKILL.md"
             self.assertIn((custom_dest, deploy_target), pairs)
+        self.assertFalse(any(DEFAULT_DEPLOY_PATHS["codex"] in dest.parents for _, dest in pairs))
 
         # 驗證 third-party skill 多平台派發輸出
         vendor_dest = out_dir / ".agents" / "skills" / "vendor-skill" / "SKILL.md"
@@ -100,6 +110,22 @@ class TestBuild(unittest.TestCase):
         # 驗證編譯配對中包含 .agents/skills
         skill_pairs = [p for p in pairs if ".agents/skills" in str(p[0])]
         self.assertTrue(len(skill_pairs) > 0)
+
+        codex_instruction = out_dir / "codex" / "AGENTS.md"
+        self.assertTrue(codex_instruction.exists())
+        self.assertIn((codex_instruction, DEFAULT_DEPLOY_PATHS["codex"] / "AGENTS.md"), pairs)
+
+    def test_compile_codex_instruction_to_codex_home(self):
+        out_dir = self.root_dir / "dist"
+
+        pairs = compile_targets(["codex"], self.root_dir, out_dir)
+
+        codex_instruction = out_dir / "codex" / "AGENTS.md"
+        self.assertEqual(
+            codex_instruction.read_text(encoding="utf-8"),
+            "# Rules\n\n# Identity\nName: White Hunag\n\n# Coding Style\nKeep it simple.\n",
+        )
+        self.assertEqual(pairs, [(codex_instruction, DEFAULT_DEPLOY_PATHS["codex"] / "AGENTS.md")])
 
     def test_compile_and_deploy_dry_run(self):
         src_file = self.root_dir / "sample.txt"
