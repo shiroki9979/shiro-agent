@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 新增 Codex Target Agent：將 Shared Rule 編譯為 `~/.codex/AGENTS.md`，並保留 `~/.agents/skills/` 作為唯一全域 Skills 路徑，不管理 Codex command rules（[#3](https://github.com/shiroki9979/shiro-agent/issues/3)）。
+- 新增 Codex Target Agent：將 Shared Rule 編譯為 `~/.codex/AGENTS.md`，並保留 `~/.agents/skills/` 作為唯一全域 Skills 路徑，不管理 Codex command rules（[#2](https://github.com/shiroki9979/shiro-agent/issues/2)）。
 - 新增 `after-code-review` 自建技能：將 `/code-review` 雙軸報告分流為下一 commit／開票草稿（`custom-skills/after-code-review/`）。
 - 引入 `diagram-design`（源自 `cathrynlavery/diagram-design`）第三方技能，鎖定檔技能數由 53 增至 54（`skills-lock.json`、`.agents/skills/diagram-design/`）。
 - 新增 `eli5` 自建技能，暫存 Anthropic `claude-plugins-community` 的 HTML 圖解解釋技能副本（正式發布前）。

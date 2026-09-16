@@ -1,5 +1,8 @@
 # shiro-agent
 
+> 建立日期：2026-08-22
+> 最後更新：2026-09-16
+
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
 透過 `shared/` 規範層維護單一真實來源（Single Source of Truth），並利用編譯/同步腳本自動展開並部署至各 Agent 全域設定或專案目錄。
