@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - 新增 Codex Target Agent：將 Shared Rule 編譯為 `~/.codex/AGENTS.md`，並保留 `~/.agents/skills/` 作為唯一全域 Skills 路徑，不管理 Codex command rules（[#2](https://github.com/shiroki9979/shiro-agent/issues/2)）。
-- 新增 `after-code-review` 自建技能：將 `/code-review` 雙軸報告分流為下一 commit／開票草稿（`custom-skills/after-code-review/`）。
+- 引入 `ponytail`（源自 `dietrichgebert/ponytail`）6 項第三方技能（`ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`, `ponytail-review`），鎖定檔技能數由 54 增至 60；並於 Cursor 新增常駐規則（`skills-lock.json`、`.agents/skills/`、`configs/cursor/rules/ponytail.mdc`）。
 - 引入 `diagram-design`（源自 `cathrynlavery/diagram-design`）第三方技能，鎖定檔技能數由 53 增至 54（`skills-lock.json`、`.agents/skills/diagram-design/`）。
 - 新增 `eli5` 自建技能，暫存 Anthropic `claude-plugins-community` 的 HTML 圖解解釋技能副本（正式發布前）。
 - 引入 15 個源自 `anthropics/skills` 的第三方技能（文件處理、設計、MCP、內部溝通等），鎖定檔技能數由 38 增至 53（`skills-lock.json`、`.agents/skills/`）。
@@ -22,13 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 同步上游第三方技能：`diagram-design` 新增瀑布圖、Excalidraw 匯入與 CJK 字型支援；`frontend-design` 更新設計原則與反模板化指引，並將技能手冊圖表數由 39 改為 40（`skills-lock.json`、`.agents/skills/`、`docs/third-party-skills.md`）。
 - 精簡 `shared/identity.md`（移除 Profile 與程式碼輸出條目）與 `shared/coding-style.md`（移除原則口號與註解語言強制）。
 - 校正 GitHub 儲存庫連結至 `shiroki9979/shiro-agent`（`CHANGELOG.md`、`AGENTS.md`）。
-- 精簡 `diataxis` 自建技能工作流程，移除強制輸出宣告區塊之要求（`custom-skills/diataxis/SKILL.md`）。
-- 同步更新 `docs/third-party-skills.md` 技能清單與分類（53 → 54；新增 `cathrynlavery/diagram-design` 條目）。
+- 同步更新 `docs/third-party-skills.md` 技能清單與分類（54 → 60；補齊 `diagram-design` 說明並新增 `dietrichgebert/ponytail` 條目）。
 - 於 `README.md` 與 `AGENTS.md` 補上 `make release` 發布指令說明。
 - 校正 `docs/agent-skill-paths-research.md` 之 Skills 派發結論，使其與現行多目標全域部署一致。
 
 ### Removed
 
+- 移除 `after-code-review`、`diataxis`、`prepare-commit` 自建技能（`custom-skills/`）。
 - 移除全域 always-on 的 Grill 工作流程摘要（`shared/workflows/grill-me.md`、`shared/workflows/grill-with-docs.md`）；質詢改由第三方技能 `grill-me` / `grill-with-docs` 觸發。
 
 ### Fixed

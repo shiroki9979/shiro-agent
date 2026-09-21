@@ -135,7 +135,7 @@ git diff --stat HEAD~10 HEAD 2>/dev/null
 
 ### C. Diátaxis 結構化文件
 
-- 依循 `diataxis` 規範。
+- 依循 Diátaxis 結構化框架規範。
 - 修復或補充內容時，嚴格維護該文件所屬象限之純度（Tutorial 禁止塞入 API 字典、Reference 禁止寫入入門教學），避免象限污染。
 
 ---
