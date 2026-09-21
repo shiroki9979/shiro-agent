@@ -1,13 +1,12 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-09-13  
-本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 54 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
-
+最後更新：2026-09-21  
+本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 60 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 ## 1. 技能總覽與分類架構
 
-目前的 54 個第三方技能主要源自 `mattpocock/skills`（36 個）、`anthropics/skills`（16 個）、`cathrynlavery/diagram-design`（1 個）與 `vercel-labs/skills`（1 個 `find-skills`），依軟體開發生命週期與功能定位分為 11 大類別：
+目前的 60 個第三方技能主要源自 `mattpocock/skills`（36 個）、`anthropics/skills`（16 個）、`dietrichgebert/ponytail`（6 個）、`cathrynlavery/diagram-design`（1 個）與 `vercel-labs/skills`（1 個 `find-skills`），依軟體開發生命週期與功能定位分為 12 大類別：
 
 | 分類領域 | 包含技能 | 核心功能摘要 |
 | **1. 流程導航與探索** | [`ask-matt`](../.agents/skills/ask-matt/SKILL.md), [`find-skills`](../.agents/skills/find-skills/SKILL.md) | 技能路由器、開源生態系技能搜尋與安裝 |
@@ -21,9 +20,9 @@
 | **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md), [`doc-coauthoring`](../.agents/skills/doc-coauthoring/SKILL.md), [`internal-comms`](../.agents/skills/internal-comms/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲、Git 防護鉤子、Pre-commit 與練習題骨架、結構化共寫文件、內部溝通套版 |
 | **10. 文件產製與編輯** | [`docx`](../.agents/skills/docx/SKILL.md), [`pptx`](../.agents/skills/pptx/SKILL.md), [`pdf`](../.agents/skills/pdf/SKILL.md), [`xlsx`](../.agents/skills/xlsx/SKILL.md) | Word／PowerPoint／PDF／試算表之建立、讀取、編輯與轉換（Anthropic source-available，非 Apache 2.0） |
 | **11. 視覺設計與生成產出** | [`canvas-design`](../.agents/skills/canvas-design/SKILL.md), [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md), [`theme-factory`](../.agents/skills/theme-factory/SKILL.md), [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md), [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md), [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md), [`diagram-design`](../.agents/skills/diagram-design/SKILL.md) | 靜態海報／藝術 PNG／PDF、p5.js 生成藝術、工件主題套用、Anthropic 品牌樣式、Slack GIF、複雜 React HTML artifact、40 種編輯級系統架構與流程圖表（HTML/SVG） |
+| **12. 極簡實作與防過度工程** | [`ponytail`](../.agents/skills/ponytail/SKILL.md), [`ponytail-audit`](../.agents/skills/ponytail-audit/SKILL.md), [`ponytail-debt`](../.agents/skills/ponytail-debt/SKILL.md), [`ponytail-gain`](../.agents/skills/ponytail-gain/SKILL.md), [`ponytail-help`](../.agents/skills/ponytail-help/SKILL.md), [`ponytail-review`](../.agents/skills/ponytail-review/SKILL.md) | 最短路徑 YAGNI 實作階梯、全儲存庫過度工程稽核、捷徑債務帳本追蹤、基準省工記分板、速查卡、過度複雜度審查 |
 
 ---
-
 
 Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路徑：
 
@@ -442,5 +441,52 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 
 - **來源**：`cathrynlavery/diagram-design` (`skills/diagram-design/`)
 - **觸發情境**：使用者要求繪製架構圖、流程圖、時序圖、狀態機、資料模型等 40 種視覺圖表，或需重繪 draw.io / Mermaid / Excalidraw 為獨立 HTML/SVG/PNG 時。
+- **功能描述**：支援 40 種編輯級專業圖表（架構、資料流、時序、狀態機等），提供 Minimal Light、Minimal Dark 與 Full-editorial 三種樣式，並支援從網站擷取品牌色彩或 Excalidraw 手繪風格重繪。
+
+---
+
+### 類別 12：極簡實作與防過度工程 (Minimalism & Anti-Overengineering / Ponytail)
+
+#### [`ponytail`](../.agents/skills/ponytail/SKILL.md)
+
+- **來源**：`dietrichgebert/ponytail` (`skills/ponytail/`)
+- **觸發情境**：任何編程任務（撰寫、新增、重構、修復、審查或設計程式碼、挑選依賴套件），或使用者提及 "ponytail"、"be lazy"、"lazy mode"、"simplest solution"、"minimal solution"、"yagni"、"do less"、"shortest path" 或抱怨過度工程與樣板時。
+- **功能描述**：強制採用最偷懶、最短且確實可行的解法。落實七級階梯：YAGNI 質疑需求 ➔ 現有程式碼複用 ➔ 標準函式庫優先 ➔ 原生平台功能 ➔ 既有依賴 ➔ 一行化 ➔ 最小實作程式碼。支援 `lite`、`full`（預設）與 `ultra` 三種強度。刻意取捨之處留下 `ponytail:` 註解標註上限與升級路徑。
+
+#### [`ponytail-audit`](../.agents/skills/ponytail-audit/SKILL.md)
+
+- **來源**：`dietrichgebert/ponytail` (`skills/ponytail-audit/`)
+- **觸發情境**：使用者要求 "audit this codebase"、"audit for over-engineering"、"what can I delete from this repo"、"find bloat" 或呼叫 `/ponytail-audit` 時。
+- **功能描述**：全專案掃描過度工程，產出按精簡幅度排序的單次稽核報告。使用 `delete:`、`stdlib:`、`native:`、`yagni:`、`shrink:` 等標籤標註可刪除、以標準庫/原生取代或簡化的項目。僅報告不直接修改程式碼。
+
+#### [`ponytail-debt`](../.agents/skills/ponytail-debt/SKILL.md)
+
+- **來源**：`dietrichgebert/ponytail` (`skills/ponytail-debt/`)
+- **觸發情境**：使用者要求 "ponytail debt"、"/ponytail-debt"、"what did ponytail defer"、"list the shortcuts" 或 "ponytail ledger" 時。
+- **功能描述**：掃描儲存庫中所有 `ponytail:` 註解標籤，彙整為單一債務帳本（Debt Ledger），列出刻意留下的捷徑、限制上限與後續升級路徑，防止暫時性妥協變成永久爛帳。
+
+#### [`ponytail-gain`](../.agents/skills/ponytail-gain/SKILL.md)
+
+- **來源**：`dietrichgebert/ponytail` (`skills/ponytail-gain/`)
+- **觸發情境**：使用者輸入 `/ponytail-gain`、"ponytail gain"、"what does ponytail save"、"show ponytail impact" 或 "ponytail scoreboard" 時。
+- **功能描述**：以 ASCII 長條圖展示 Ponytail 在公開基準測試中帶來的精簡效益記分板（程式碼行數減少、成本降低、回應速度提升等中位數數據）。
+
+#### [`ponytail-help`](../.agents/skills/ponytail-help/SKILL.md)
+
+- **來源**：`dietrichgebert/ponytail` (`skills/ponytail-help/`)
+- **觸發情境**：使用者輸入 `/ponytail-help`、"ponytail help"、"what ponytail commands" 或詢問如何使用 ponytail 時。
+- **功能描述**：顯示 Ponytail 模式、強度等級（Lite / Full / Ultra）與相關技能指令的單次速查參考卡。
+
+#### [`ponytail-review`](../.agents/skills/ponytail-review/SKILL.md)
+
+- **來源**：`dietrichgebert/ponytail` (`skills/ponytail-review/`)
+- **觸發情境**：使用者要求 "review for over-engineering"、"what can we delete"、"is this over-engineered"、"simplify review" 或呼叫 `/ponytail-review` 時。
+- **功能描述**：專門針對 Git Diff 進行過度工程審查。每條 finding 採一行格式：位置、刪除標籤（`delete:`、`stdlib:`、`native:`、`yagni:`、`shrink:`）與替代方案，目標是讓 Diff 變得更短。
+
+---
+
+## 4. 相關設定與鎖定檔案
+
 - **技能鎖定檔**：[skills-lock.json](../skills-lock.json)（記錄各技能之來源儲存庫、相對路徑與 SHA256 雜湊值）。
+- **Cursor 常駐規則**：[configs/cursor/rules/ponytail.mdc](../configs/cursor/rules/ponytail.mdc)（在 Cursor 環境中以 always-on 模式套用 Ponytail 最小實作原則）。
 - **自建技能目錄**：[custom-skills/](../custom-skills/)（與第三方技能隔離，支援模板展開）。
