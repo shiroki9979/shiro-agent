@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 新增 Claude Code 設定機制研究（`docs/claude-settings-research.md`）。
+- 編譯時拒絕 Claude Code 保留的技能名稱（`synced`、`anthropic-skills*`），避免部署後靜默不載入（`scripts/build.py`）。
 - 新增 Codex Target Agent：將 Shared Rule 編譯為 `~/.codex/AGENTS.md`，並保留 `~/.agents/skills/` 作為唯一全域 Skills 路徑，不管理 Codex command rules（[#2](https://github.com/shiroki9979/shiro-agent/issues/2)）。
 - 引入 `ponytail`（源自 `dietrichgebert/ponytail`）6 項第三方技能（`ponytail`, `ponytail-audit`, `ponytail-debt`, `ponytail-gain`, `ponytail-help`, `ponytail-review`），鎖定檔技能數由 54 增至 60；並於 Cursor 新增常駐規則（`skills-lock.json`、`.agents/skills/`、`configs/cursor/rules/ponytail.mdc`）。
 - 引入 `diagram-design`（源自 `cathrynlavery/diagram-design`）第三方技能，鎖定檔技能數由 53 增至 54（`skills-lock.json`、`.agents/skills/diagram-design/`）。
@@ -29,10 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - 移除 `after-code-review`、`diataxis`、`prepare-commit` 自建技能（`custom-skills/`）。
+- 移除 Claude `mcp_config.json` 部署：Claude Code 不讀取 `~/.claude/mcp_config.json`，使用者層 MCP 改以 `claude mcp add-json --scope user` 寫入 `~/.claude.json`（`configs/claude/mcp_config.json`、`scripts/build.py`）。
 - 移除全域 always-on 的 Grill 工作流程摘要（`shared/workflows/grill-me.md`、`shared/workflows/grill-with-docs.md`）；質詢改由第三方技能 `grill-me` / `grill-with-docs` 觸發。
 
 ### Fixed
 
+- 修正 `docs/agent-skill-paths-research.md` 之 Claude Code MCP 與專案規則路徑。
 - 修正連續 INCLUDE 展開後 Markdown 標題緊貼上一段的問題（`configs/` 入口模板）。
 
 ## [0.1.0] - 2026-08-25

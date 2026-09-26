@@ -131,6 +131,33 @@ class TestBuild(unittest.TestCase):
         )
         self.assertEqual(pairs, [(codex_instruction, DEFAULT_DEPLOY_PATHS["codex"] / "AGENTS.md")])
 
+    def test_compile_claude_deploys_only_instruction_file(self):
+        # Claude Code 不讀取 ~/.claude/mcp_config.json；使用者層 MCP 僅存於 ~/.claude.json
+        claude_config_dir = self.root_dir / "configs" / "claude"
+        claude_config_dir.mkdir(parents=True, exist_ok=True)
+        (claude_config_dir / "CLAUDE.md").write_text("# Rules\n\n<!-- INCLUDE:shared/identity.md -->\n", encoding="utf-8")
+        (claude_config_dir / "mcp_config.json").write_text('{"mcpServers": {}}', encoding="utf-8")
+        out_dir = self.root_dir / "dist"
+
+        pairs = compile_targets(["claude"], self.root_dir, out_dir)
+
+        claude_instruction = out_dir / "claude" / "CLAUDE.md"
+        self.assertEqual(claude_instruction.read_text(encoding="utf-8"), "# Rules\n\n# Identity\nName: White Hunag\n")
+        self.assertEqual(pairs, [(claude_instruction, DEFAULT_DEPLOY_PATHS["claude"] / "CLAUDE.md")])
+
+    def test_compile_skills_rejects_claude_reserved_names(self):
+        for reserved_name in ["synced", "Synced", "anthropic-skills-demo"]:
+            with self.subTest(reserved_name=reserved_name):
+                reserved_dir = self.root_dir / "custom-skills" / reserved_name
+                reserved_dir.mkdir(parents=True, exist_ok=True)
+                (reserved_dir / "SKILL.md").write_text("# Reserved", encoding="utf-8")
+
+                with self.assertRaises(ValueError) as ctx:
+                    compile_skills(self.root_dir, self.root_dir / "dist")
+                self.assertIn(f"Skill name '{reserved_name}' is reserved by Claude Code", str(ctx.exception))
+
+                shutil.rmtree(reserved_dir)
+
     def test_compile_and_deploy_dry_run(self):
         src_file = self.root_dir / "sample.txt"
         src_file.write_text("Hello", encoding="utf-8")

@@ -1,7 +1,7 @@
 # shiro-agent
 
 > 建立日期：2026-08-22
-> 最後更新：2026-09-17
+> 最後更新：2026-09-26
 
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
@@ -86,7 +86,7 @@ uv run python scripts/build.py --target skills --dry-run
   - Cursor 從既有的 `~/.agents/skills/` 探索，不建立 `~/.cursor/skills/` 重複副本；如需 Cloud Agents 同步，另由 Cursor 設定管理。
 - **Antigravity Rules / Config**：`~/.gemini/config/rules/`、`mcp_config.json`、`hooks.json`
 - **Cursor Rules / Config**：`~/.cursor/rules/`、`settings.json`
-- **Claude Config**：`~/.claude/CLAUDE.md`、`mcp_config.json`
+- **Claude Config**：`~/.claude/CLAUDE.md`（MCP 存於 `~/.claude.json`，須以 `claude mcp add-json --scope user` 設定，不由部署管理；詳見 [Claude Code 設定研究](docs/claude-settings-research.md)）
 - **Codex Instruction**：`~/.codex/AGENTS.md`（僅編譯 `shared/identity.md` 與 `shared/coding-style.md`；不管理 Codex command rules）
 
 Codex 使用既有的 `~/.agents/skills/` 作為全域 Skills 探索路徑，因此不會建立或同步 `~/.codex/skills/` 的重複副本。

@@ -15,6 +15,10 @@ from typing import Dict, List, Optional, Tuple
 
 INCLUDE_PATTERN = re.compile(r"<!--\s*INCLUDE:([^\s>]+)\s*-->")
 
+# Claude Code 保留給 claude.ai 同步技能的目錄名稱，使用者技能以此命名時不會被載入
+CLAUDE_RESERVED_SKILL_NAME = "synced"
+CLAUDE_RESERVED_SKILL_PREFIX = "anthropic-skills"
+
 DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
     "agents": Path.home() / ".agents",
     "antigravity": Path.home() / ".gemini" / "config",
@@ -54,6 +58,13 @@ def process_file(src_path: Path, dest_path: Path, root_dir: Path) -> None:
         shutil.copy2(src_path, dest_path)
 
 
+def validate_skill_name(skill_name: str) -> None:
+    """拒絕 Claude Code 保留的技能名稱，避免部署後靜默不載入。"""
+    lowered = skill_name.lower()
+    if lowered == CLAUDE_RESERVED_SKILL_NAME or lowered.startswith(CLAUDE_RESERVED_SKILL_PREFIX):
+        raise ValueError(f"Skill name '{skill_name}' is reserved by Claude Code and would not be loaded.")
+
+
 def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
     """編譯自建 Skills (custom-skills/) 與第三方 Skills (.agents/skills/) 至輸出與部署路徑。"""
     pairs: List[Tuple[Path, Path]] = []
@@ -81,6 +92,7 @@ def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
                 discovered_skills[skill_name] = ("third-party", skill_dir)
 
     for skill_name, (_, skill_dir) in discovered_skills.items():
+        validate_skill_name(skill_name)
         dest_skill_dir = target_out / skill_name
         dest_skill_dir.mkdir(parents=True, exist_ok=True)
         for item in skill_dir.glob("**/*"):
@@ -154,7 +166,11 @@ def compile_cursor(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
 
 
 def compile_claude(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
-    """編譯 Claude 指示與 MCP 設定。"""
+    """編譯 Claude 全域指示。
+
+    MCP 不在此部署：Claude Code 使用者層 MCP 存於 ~/.claude.json（含 OAuth 與狀態資料），
+    須以 `claude mcp add-json --scope user` 寫入，不可由部署整檔覆寫。
+    """
     pairs: List[Tuple[Path, Path]] = []
     config_dir = repo_root / "configs" / "claude"
     target_out = out_dir / "claude"
@@ -165,13 +181,6 @@ def compile_claude(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
         dest_file = target_out / "CLAUDE.md"
         process_file(claude_md, dest_file, repo_root)
         pairs.append((dest_file, DEFAULT_DEPLOY_PATHS["claude"] / "CLAUDE.md"))
-
-    # 複製 mcp_config.json
-    mcp_src = config_dir / "mcp_config.json"
-    if mcp_src.exists():
-        dest_file = target_out / "mcp_config.json"
-        process_file(mcp_src, dest_file, repo_root)
-        pairs.append((dest_file, DEFAULT_DEPLOY_PATHS["claude"] / "mcp_config.json"))
 
     return pairs
 
