@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 新增自建技能 `restate-goal`：複述使用者目標與待解問題以對齊理解（`custom-skills/restate-goal/`）。
 - 新增 Claude Code 設定機制研究（`docs/claude-settings-research.md`）。
 - 編譯時拒絕 Claude Code 保留的技能名稱（`synced`、`anthropic-skills*`），避免部署後靜默不載入（`scripts/build.py`）。
 - 新增 Codex Target Agent：將 Shared Rule 編譯為 `~/.codex/AGENTS.md`，並保留 `~/.agents/skills/` 作為唯一全域 Skills 路徑，不管理 Codex command rules（[#2](https://github.com/shiroki9979/shiro-agent/issues/2)）。
