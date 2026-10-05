@@ -4,13 +4,13 @@
 help: ## 顯示所有可用指令與說明
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-build: ## 編譯所有 Agent 設定至 dist/ 目錄
+build: ## 清理目標舊產物並編譯所有 Agent 設定至 dist/ 目錄
 	uv run python scripts/build.py
 
-deploy: ## 編譯並部署所有 Agent 設定至系統全域目錄
+deploy: ## 編譯、部署至全域目錄並清理已失去來源的受管檔案
 	uv run python scripts/build.py --deploy
 
-dry-run: ## 模擬編譯與部署流程 (Dry-run)
+dry-run: ## 編譯並預覽全域部署、備份與清理操作 (Dry-run)
 	uv run python scripts/build.py --dry-run
 
 test: ## 執行單元測試套件

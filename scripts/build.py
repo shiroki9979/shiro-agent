@@ -6,11 +6,13 @@ and copies/deploys them to target environments.
 """
 
 import argparse
+import json
 import os
 from pathlib import Path
 import re
 import shutil
-import sys
+import stat
+import tempfile
 from typing import Dict, List, Optional, Tuple
 
 INCLUDE_PATTERN = re.compile(r"<!--\s*INCLUDE:([^\s>]+)\s*-->")
@@ -25,6 +27,27 @@ DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
     "cursor": Path.home() / ".cursor",
     "claude": Path.home() / ".claude",
     "codex": Path.home() / ".codex",
+}
+
+TARGET_OUTPUT_DIRS = {
+    "skills": ".agents",
+    "antigravity": "antigravity",
+    "cursor": "cursor",
+    "claude": "claude",
+    "codex": "codex",
+}
+
+DEPLOY_MANIFEST_NAME = ".shiro-agent-deploy.json"
+TARGET_DEPLOY_RULES = {
+    "skills": {
+        "agents": ["skills/", "skills-lock.json"],
+        "antigravity": ["skills/"],
+        "claude": ["skills/"],
+    },
+    "antigravity": {"antigravity": ["rules/", "mcp_config.json", "hooks.json"]},
+    "cursor": {"cursor": ["rules/", "settings.json"]},
+    "claude": {"claude": ["CLAUDE.md"]},
+    "codex": {"codex": ["AGENTS.md"]},
 }
 
 
@@ -200,6 +223,8 @@ def compile_codex(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
 
 def compile_targets(targets: List[str], repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
     """依指定目標列表編譯所有設定檔。"""
+    validate_output_dir(repo_root, out_dir)
+    out_dir = out_dir.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     all_pairs: List[Tuple[Path, Path]] = []
 
@@ -211,37 +236,212 @@ def compile_targets(targets: List[str], repo_root: Path, out_dir: Path) -> List[
         "codex": compile_codex,
     }
 
-    selected = target_map.keys() if "all" in targets else targets
+    selected = selected_targets(targets)
     for target in selected:
-        if target in target_map:
-            all_pairs.extend(target_map[target](repo_root, out_dir))
+        validate_managed_path(out_dir / TARGET_OUTPUT_DIRS[target], out_dir)
+    for target in selected:
+        target_out = out_dir / TARGET_OUTPUT_DIRS[target]
+        if target_out.exists():
+            shutil.rmtree(target_out)
+        all_pairs.extend(target_map[target](repo_root, out_dir))
 
     return all_pairs
 
 
-def deploy(file_pairs: List[Tuple[Path, Path]], dry_run: bool = False, backup: bool = True) -> List[str]:
-    """將編譯好的檔案複製至目標系統路徑。"""
+def validate_output_dir(repo_root: Path, out_dir: Path) -> None:
+    repo_root = repo_root.resolve()
+    out_dir = out_dir.resolve()
+    if repo_root.is_relative_to(out_dir):
+        raise ValueError(f"Output directory overlaps repository: {out_dir}")
+    for source_name in ["custom-skills", ".agents", "configs", "shared", ".git"]:
+        source_dir = (repo_root / source_name).resolve()
+        if out_dir.is_relative_to(source_dir) or source_dir.is_relative_to(out_dir):
+            raise ValueError(f"Output directory overlaps source directory: {out_dir}")
+
+
+def selected_targets(targets: List[str]) -> List[str]:
+    selected = list(TARGET_OUTPUT_DIRS) if "all" in targets else list(dict.fromkeys(targets))
+    for target in selected:
+        if target not in TARGET_OUTPUT_DIRS:
+            raise ValueError(f"Unknown deployment target: {target}")
+    return selected
+
+
+def deploy(
+    file_pairs: List[Tuple[Path, Path]],
+    dry_run: bool = False,
+    backup: bool = True,
+    *,
+    targets: Optional[List[str]] = None,
+) -> List[str]:
+    """部署現有檔案並清理上次部署後失去來源的檔案。"""
+    manifest_path = DEFAULT_DEPLOY_PATHS["agents"] / DEPLOY_MANIFEST_NAME
+    validate_managed_path(manifest_path, DEFAULT_DEPLOY_PATHS["agents"])
+    previous = load_deploy_manifest(manifest_path)
+    selected = selected_targets(targets if targets is not None else ["all"])
+    current = collect_deployment_files(file_pairs, selected)
+    stale_files = stale_deployment_files(previous, current)
+    destinations = [dest_file for _, dest_file in file_pairs] + stale_files
+    validate_deployment_paths(destinations, backup)
+
     actions: List[str] = []
-
-    for src_file, dest_file in file_pairs:
-        if not src_file.exists():
-            continue
-
-        if dry_run:
-            actions.append(f"[DRY-RUN] Copy {src_file} -> {dest_file}")
-            continue
-
-        dest_file.parent.mkdir(parents=True, exist_ok=True)
-
-        if backup and dest_file.exists():
-            backup_file = dest_file.with_suffix(dest_file.suffix + ".bak")
-            shutil.copy2(dest_file, backup_file)
-            actions.append(f"[BACKUP] {dest_file} -> {backup_file}")
-
-        shutil.copy2(src_file, dest_file)
-        actions.append(f"[DEPLOY] {src_file} -> {dest_file}")
-
+    for file_pair in file_pairs:
+        actions.extend(copy_deployed_file(file_pair, dry_run, backup))
+    for dest_file in stale_files:
+        actions.extend(remove_deployed_file(dest_file, dry_run, backup))
+    if not dry_run:
+        save_deploy_manifest(manifest_path, {**previous, **current})
     return actions
+
+
+def collect_deployment_files(file_pairs: List[Tuple[Path, Path]], selected: List[str]) -> Dict[str, List[str]]:
+    current: Dict[str, List[str]] = {target: [] for target in selected}
+    for src_file, dest_file in file_pairs:
+        if not src_file.is_file():
+            raise FileNotFoundError(f"Deployment source not found: {src_file}")
+        target, _, _ = deployment_scope(dest_file)
+        if target not in current:
+            raise ValueError(f"Deployment file does not belong to selected targets: {dest_file}")
+        current[target].append(str(dest_file))
+    return {target: sorted(set(filenames)) for target, filenames in current.items()}
+
+
+def stale_deployment_files(previous: Dict[str, List[str]], current: Dict[str, List[str]]) -> List[Path]:
+    return [
+        Path(filename)
+        for target, filenames in current.items()
+        for filename in sorted(set(previous.get(target, [])) - set(filenames))
+    ]
+
+
+def validate_deployment_paths(destinations: List[Path], backup: bool) -> None:
+    for dest_file in destinations:
+        _, agent, _ = deployment_scope(dest_file)
+        validate_managed_path(dest_file, DEFAULT_DEPLOY_PATHS[agent])
+        if dest_file.exists() and not dest_file.is_file():
+            raise ValueError(f"Expected a deployment file: {dest_file}")
+        if backup:
+            validate_managed_path(deployment_backup_path(dest_file), DEFAULT_DEPLOY_PATHS["agents"])
+
+
+def copy_deployed_file(file_pair: Tuple[Path, Path], dry_run: bool, backup: bool) -> List[str]:
+    src_file, dest_file = file_pair
+    if (
+        dest_file.is_file()
+        and stat.S_IMODE(src_file.stat().st_mode) == stat.S_IMODE(dest_file.stat().st_mode)
+        and src_file.read_bytes() == dest_file.read_bytes()
+    ):
+        return []
+
+    actions: List[str] = []
+    if backup and dest_file.exists():
+        actions.append(backup_deployed_file(dest_file, dry_run))
+    if dry_run:
+        return actions + [f"[DRY-RUN] Copy {src_file} -> {dest_file}"]
+
+    dest_file.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src_file, dest_file)
+    return actions + [f"[DEPLOY] {src_file} -> {dest_file}"]
+
+
+def remove_deployed_file(dest_file: Path, dry_run: bool, backup: bool) -> List[str]:
+    actions: List[str] = []
+    if backup and dest_file.exists():
+        actions.append(backup_deployed_file(dest_file, dry_run))
+    if dry_run:
+        return actions + [f"[DRY-RUN] Remove {dest_file}"]
+
+    if dest_file.exists():
+        dest_file.unlink()
+        actions.append(f"[REMOVE] {dest_file}")
+    _, _, boundary = deployment_scope(dest_file)
+    remove_empty_parents(dest_file.parent, boundary)
+    return actions
+
+
+def backup_deployed_file(dest_file: Path, dry_run: bool = False) -> str:
+    backup_file = deployment_backup_path(dest_file)
+    if dry_run:
+        return f"[DRY-RUN] Backup {dest_file} -> {backup_file}"
+    backup_file.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(dest_file, backup_file)
+    return f"[BACKUP] {dest_file} -> {backup_file}"
+
+
+def deployment_backup_path(dest_file: Path) -> Path:
+    _, agent, _ = deployment_scope(dest_file)
+    relative_path = dest_file.relative_to(DEFAULT_DEPLOY_PATHS[agent])
+    backup_file = DEFAULT_DEPLOY_PATHS["agents"] / ".shiro-agent-backups" / agent / relative_path
+    return backup_file.with_suffix(backup_file.suffix + ".bak")
+
+
+def validate_managed_path(path: Path, root: Path) -> None:
+    for candidate in [path, *path.parents]:
+        if candidate.is_symlink():
+            raise ValueError(f"Symlink in managed path: {candidate}")
+        if candidate == root:
+            return
+    raise ValueError(f"Path is outside managed root '{root}': {path}")
+
+
+def deployment_scope(dest_file: Path) -> Tuple[str, str, Path]:
+    if not dest_file.is_absolute() or ".." in dest_file.parts:
+        raise ValueError(f"Invalid deployment path: {dest_file}")
+    for target, agent_rules in TARGET_DEPLOY_RULES.items():
+        for agent, rules in agent_rules.items():
+            root = DEFAULT_DEPLOY_PATHS[agent]
+            for rule in rules:
+                path = root / rule
+                if rule.endswith("/") and dest_file != path and dest_file.is_relative_to(path):
+                    return target, agent, path
+                if not rule.endswith("/") and dest_file == path:
+                    return target, agent, root
+    raise ValueError(f"Deployment path is outside managed locations: {dest_file}")
+
+
+def load_deploy_manifest(manifest_path: Path) -> Dict[str, List[str]]:
+    if not manifest_path.exists():
+        return {}
+    try:
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ValueError(f"Invalid deployment manifest: {manifest_path}: {error}") from error
+    if not isinstance(data, dict) or data.get("version") != 1 or not isinstance(data.get("targets"), dict):
+        raise ValueError(f"Invalid deployment manifest format: {manifest_path}")
+    for target, filenames in data["targets"].items():
+        if target not in TARGET_DEPLOY_RULES or not isinstance(filenames, list):
+            raise ValueError(f"Invalid deployment manifest target: {target}")
+        for filename in filenames:
+            if not isinstance(filename, str) or not Path(filename).is_absolute() or ".." in Path(filename).parts:
+                raise ValueError(f"Invalid deployment manifest path: {filename!r}")
+            scope, _, _ = deployment_scope(Path(filename))
+            if scope != target:
+                raise ValueError(f"Deployment manifest path does not match target '{target}': {filename}")
+    return data["targets"]
+
+
+def remove_empty_parents(directory: Path, boundary: Path) -> None:
+    while directory != boundary and directory.is_relative_to(boundary):
+        if not directory.exists() or any(directory.iterdir()):
+            return
+        directory.rmdir()
+        directory = directory.parent
+
+
+def save_deploy_manifest(manifest_path: Path, targets: Dict[str, List[str]]) -> None:
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=manifest_path.parent,
+            prefix=manifest_path.name + ".", suffix=".tmp", delete=False,
+        ) as temporary_file:
+            temporary_path = Path(temporary_file.name)
+            temporary_file.write(json.dumps({"version": 1, "targets": targets}, indent=2) + "\n")
+        os.replace(temporary_path, manifest_path)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -256,17 +456,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--deploy",
         action="store_true",
-        help="Deploy compiled files to target system paths",
+        help="Deploy compiled files and remove obsolete managed files",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Simulate deployment actions without modifying files",
+        help="Compile output and preview deployment without modifying target files",
     )
     parser.add_argument(
         "--no-backup",
         action="store_true",
-        help="Disable creating .bak files when deploying over existing files",
+        help="Disable centralized .bak backups when overwriting or removing files",
     )
     parser.add_argument(
         "--out-dir",
@@ -288,7 +488,7 @@ def main() -> None:
 
     if args.deploy or args.dry_run:
         print("\nDeploying configurations...")
-        actions = deploy(pairs, dry_run=args.dry_run, backup=not args.no_backup)
+        actions = deploy(pairs, dry_run=args.dry_run, backup=not args.no_backup, targets=args.target)
         for action in actions:
             print(f"  {action}")
         print(f"\nCompleted {len(actions)} deployment operation(s).")

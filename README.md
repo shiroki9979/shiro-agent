@@ -1,7 +1,7 @@
 # shiro-agent
 
 > 建立日期：2026-08-22
-> 最後更新：2026-09-26
+> 最後更新：2026-10-05
 
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
@@ -48,8 +48,8 @@ shiro-agent/
 ### 快捷指令 (Makefile)
 
 ```bash
-make build         # 編譯所有設定至 dist/ (聚合 custom-skills 與 .agents/skills)
-make deploy        # 編譯並部署至全域系統路徑 (~/.agents, ~/.gemini/config, ~/.cursor, ~/.claude, ~/.codex)
+make build         # 重建 dist/ 的目標產物 (聚合 custom-skills 與 .agents/skills)
+make deploy        # 部署至全域系統路徑，並清理已失去來源的受管檔案
 make dry-run       # 預覽編譯與部署
 make test          # 執行單元測試
 make skills-list   # 列出已安裝之第三方 Agent Skills
@@ -65,6 +65,8 @@ make help          # 檢視所有可用指令
 
 預設將 `shared/` 中的規範展開，並聚合 `custom-skills/` 與 `.agents/skills/` 注入至 `dist/` 目錄：
 
+每次編譯會先清空所選目標的輸出子目錄，再產生目前來源的檔案；來源已刪除的技能與輔助檔案不會留在舊產物中。指定 `--target skills` 時僅重建 `dist/.agents/`，其餘目標的產物保留。輸出目錄不得與專案根目錄或來源目錄重疊。
+
 ```bash
 # 模擬編譯所有 Agent 設定與 Skills
 uv run python scripts/build.py --dry-run
@@ -75,9 +77,11 @@ make dry-run
 uv run python scripts/build.py --target skills --dry-run
 ```
 
+`--dry-run` 仍會重新編譯 `dist/`，但只列出全域目錄的複製、備份與刪除計畫，不修改全域檔案或部署清單。
+
 ### 2. 部署至系統設定路徑
 
-執行部署會將檔案同步至全域路徑（預設會自動建立 `.bak` 備份；可用 `--no-backup` 停用）：
+執行部署會將檔案同步至全域路徑。覆寫或刪除檔案前，預設將原內容備份至 `~/.agents/.shiro-agent-backups/<agent>/<原相對路徑>.bak`；每個檔案保留最近一次備份，可用 `--no-backup` 停用。備份集中存放，避免 `.bak` 混入技能目錄；內容與權限相同的檔案會跳過覆寫與備份。
 
 - **Skills（全域同步分發）**：聚合自有與第三方技能並派發至：
   - `~/.agents/skills/` 與 `~/.agents/skills-lock.json`（Agent Skills CLI）
@@ -102,6 +106,12 @@ uv run python scripts/build.py --target skills --deploy
 uv run python scripts/build.py --target codex --deploy
 uv run python scripts/build.py --target cursor --deploy
 ```
+
+部署清單存放於 `~/.agents/.shiro-agent-deploy.json`，依 `--target` 記錄本專案部署過的檔案。後續部署會先備份、再移除該目標清單中已失去來源的檔案，並清除空的技能／規則子目錄。即使目標已沒有任何來源檔案，仍會執行清理；其他目標的紀錄與檔案保留。
+
+清單之外的技能與檔案保留，包括另外安裝的技能、受管技能目錄中自行加入的檔案，以及舊版部署留下、尚未列入清單的技能與 `.bak`。首次使用新版會建立清單，無法自動辨認既有殘留項目的來源；刪除部署清單也會失去自動清理依據。
+
+部署清單損壞、包含越界路徑，或待寫入／清理的路徑含符號連結時，部署會在變更全域檔案前報錯，避免影響受管範圍之外的檔案。
 
 ### 3. Agent Skills 管理
 
