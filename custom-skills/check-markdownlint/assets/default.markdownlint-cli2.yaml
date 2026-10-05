@@ -1,0 +1,7 @@
+# Created: 2026-10-05
+# Last Updated: 2026-10-05
+globs:
+  - "**/*.md"
+gitignore: true
+ignores:
+  - "node_modules/**"
