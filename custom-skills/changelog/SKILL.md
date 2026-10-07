@@ -5,6 +5,9 @@ description: 建立與維護遵循 Keep a Changelog (1.1.0) 與 SemVer 規範之
 
 # Keep a Changelog 更新日誌規範
 
+> 建立日期：2026-08-24
+> 最後更新：2026-10-07
+
 本技能遵循 [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) 與 [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) 規範，指導 `CHANGELOG.md` 的初始化、日常累積記錄、版本發布切版以及檔案過長時的歷史歸檔管理。
 
 ---
@@ -16,7 +19,7 @@ description: 建立與維護遵循 Keep a Changelog (1.1.0) 與 SemVer 規範之
 3. **單一不可變性（Immutable Releases）**：一旦版本發布並標記日期，該版本的歷史紀錄即不可再追溯修改；後續修正應記錄於下一版本。
 4. **標準分類（Standard Categories）**：嚴格使用 6 大標準分類標頭，不自創分類。
 5. **語意化版本與比對連結（SemVer & Compare Links）**：遵循 `MAJOR.MINOR.PATCH` 規範，並於文件底部維護版本間的 Git 比對連結。
-6. **自包含性（Self-contained Archives）**：歷史版本歸檔拆分後，主檔與各歸檔檔案各自保留專屬的底部比對連結，無懸空死連結。
+6. **自包含性（Self-contained Archives）**：歷史版本歸檔拆分後，每份文件保留自身使用的所有連結定義，並依所在目錄解析相對路徑，無懸空死連結。
 
 ---
 
@@ -119,12 +122,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. **確定歸檔範圍與檔名**：
    - 依 Major 版本或年份切分早期版本，建立存放目錄 `docs/changelogs/`。
    - 命名範例：`docs/changelogs/CHANGELOG-v1.md`、`docs/changelogs/CHANGELOG-v0.md` 或 `docs/changelogs/CHANGELOG-2025.md`。
-2. **遷移歷史條目與比對連結**：
+2. **遷移歷史條目與連結依賴**：
    - 將已過期的歷史版本區塊自主 `CHANGELOG.md` 剪下，寫入目標歸檔檔案中。
-   - **連結隨版本同步遷移**：將屬於該歸檔版本的底部 `[X.Y.Z]: https://...` 連結同步移入該歸檔檔案末尾，保持歸檔檔自包含。
+   - 收集移動區塊使用的所有 reference link 定義，包含版本、issue、PR、圖片及完整／折疊／簡寫引用，複製到歸檔檔；主檔仍使用的定義保留，僅刪除主檔已無引用的定義。
+   - 依移動前的文件位置解析行內連結、圖片及連結定義的目標，再改寫為相對於歸檔目錄的路徑，保留查詢參數與錨點。例如根目錄的 `docs/guide.md#usage` 搬到 `docs/changelogs/` 後改為 `../guide.md#usage`。
+   - 頁內錨點依目標標題的實際去向調整；主檔指向已搬移標題的連結也需更新。保留歷史條目語意，僅調整搬移所需的連結位置。
 3. **建立主檔索引連結**：
    - 在主 `CHANGELOG.md` 底部（在比對連結上方）建立 `## Historical Releases` 區塊。
    - 加入指向該歸檔檔案之相對路徑連結與版本涵蓋說明（例如 `- [v1.x.x 歷史紀錄](docs/changelogs/CHANGELOG-v1.md)`）。
+4. **驗證搬移結果**：
+   - 比對搬移前後的版本與條目，確認無遺漏或重複；逐份檢查引用定義、相對路徑與錨點，確認仍指向原本目標。
+   - 缺少定義或無法確認目標時，列出所在檔案、引用與原因，回報歸檔驗證未完成。
 
 ---
 
@@ -150,5 +158,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | **日期格式** | 已發布版本標題符合 `## [X.Y.Z] - YYYY-MM-DD`（ISO 8601） |
 | **分類精確** | 僅使用 6 大標準英文分類（`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security`） |
 | **人本語意** | 條目清楚揭露影響與價值，無原始 commit hash 堆砌 |
-| **連結有效** | 底部所有版本與 Unreleased 皆有對應的 compare / tag 超連結 |
+| **連結有效** | 版本與 Unreleased 具備 compare / tag 連結；每份文件使用的引用定義完整，相對路徑與錨點仍指向正確目標，未驗證項目已明列 |
 | **歸檔完整** | 超過 500~800 行時已於 `docs/changelogs/` 建立歸檔檔，主檔包含 `## Historical Releases` 導覽且無懸空連結 |
