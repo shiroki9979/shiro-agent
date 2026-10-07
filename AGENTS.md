@@ -1,7 +1,7 @@
 # Agent 指南：shiro-agent
 
 > 建立日期：2026-08-24
-> 最後更新：2026-09-16
+> 最後更新：2026-10-07
 
 本專案為跨平台 AI 開發環境（Antigravity, Cursor, Claude 等）之設定檔、共用行為規範與 Agent Skills 集中管理庫。
 
@@ -35,6 +35,7 @@
 ## Agent 開發與協作規範
 
 1. **技能撰寫原則**：
+   - 新增自建技能、調整觸發範圍或驗證技能行為時，參閱 [技能撰寫與驗證指南](docs/skill-authoring-guide.md)。
    - 技能描述（`description`）為觸發路徑之 Context Pointer，語句首字前置關鍵動詞或領域名詞，精確定義適用情境。
    - 遵守漸進式揭露（Progressive Disclosure）：高頻或共通指引留在本體，邊界與深入參考拆分至獨立文件。
    - 自建技能（`custom-skills/`）與第三方技能（`.agents/skills/`）目錄名稱不得衝突。

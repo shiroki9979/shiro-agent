@@ -1,7 +1,7 @@
 # shiro-agent
 
 > 建立日期：2026-08-22
-> 最後更新：2026-10-05
+> 最後更新：2026-10-07
 
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
@@ -117,6 +117,7 @@ uv run python scripts/build.py --target cursor --deploy
 
 #### 自建技能（Custom Skills）
 
+- 撰寫與驗證方法見 [技能撰寫指南](docs/skill-authoring-guide.md)；工作流來源與版本差異見 [Skills 工作流研究](docs/skills-workflow-research.md)。
 - 建立於 `custom-skills/<skill-name>/SKILL.md`。
 - 支援在 Markdown 檔案內使用 `<!-- INCLUDE:shared/coding-style.md -->` 等標籤引用共用規範。
 - 執行 `make build` 或 `make deploy` 時會自動進行同名衝突檢查與模板展開，並聚合至 `dist/.agents/skills/` 與全域環境。

@@ -1,10 +1,12 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-09-21  
+最後更新：2026-10-07
 本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 60 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 ## 1. 技能總覽與分類架構
+
+使用工作流前可先查看 [來源核對與版本差異](skills-workflow-research.md)；要將流程整理成自建技能時，參閱 [技能撰寫與驗證指南](skill-authoring-guide.md)。
 
 目前的 60 個第三方技能主要源自 `mattpocock/skills`（36 個）、`anthropics/skills`（16 個）、`dietrichgebert/ponytail`（6 個）、`cathrynlavery/diagram-design`（1 個）與 `vercel-labs/skills`（1 個 `find-skills`），依軟體開發生命週期與功能定位分為 12 大類別：
 
