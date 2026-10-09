@@ -2,7 +2,7 @@
 
 > - Created: 2026-08-23
 > - Last Updated: 2026-08-24
-> - Author: White Huang
+> - Author: Bo-Xue Huang
 > - Status: 核准
 > - Related: [ADR-0001](0001-adopt-agent-skills-cli-standard.md), [ADR-0003](0003-multi-target-global-skills-dispatch.md)
 
