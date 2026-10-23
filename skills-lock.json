@@ -53,7 +53,7 @@
       "source": "cathrynlavery/diagram-design",
       "sourceType": "github",
       "skillPath": "skills/diagram-design/SKILL.md",
-      "computedHash": "d704ff4aed59bbfdd6a268233ae12b93f2760e077400a22249d381ab70c4a575"
+      "computedHash": "115a126a5bff5abd547b125e9865269c4ad737e4cb134df153118e0ffd679f82"
     },
     "doc-coauthoring": {
       "source": "anthropics/skills",
@@ -167,7 +167,7 @@
       "source": "dietrichgebert/ponytail",
       "sourceType": "github",
       "skillPath": "skills/ponytail/SKILL.md",
-      "computedHash": "99f0589e5646b46da07b9419a5daa178004b3dd8930fec528918a51ab07f5efc"
+      "computedHash": "061f887d9e3e735f85db3be3655a8936a00f24d5fb65ac4ab74a968a770fe342"
     },
     "ponytail-audit": {
       "source": "dietrichgebert/ponytail",
@@ -179,19 +179,19 @@
       "source": "dietrichgebert/ponytail",
       "sourceType": "github",
       "skillPath": "skills/ponytail-debt/SKILL.md",
-      "computedHash": "cb56e9f1606257dcbbe196197dffa0cb0e0ea136ad98c7eb44a85bd858b51e38"
+      "computedHash": "f5d1d2ab891ff0a650a90b67235e487828e7d2a189de08a1ae073032de379407"
     },
     "ponytail-gain": {
       "source": "dietrichgebert/ponytail",
       "sourceType": "github",
       "skillPath": "skills/ponytail-gain/SKILL.md",
-      "computedHash": "725571b5c159e6504e0a2b337d7e2a9917e22ab87809f182059c2f2562ec9657"
+      "computedHash": "fca2297cf7b5fd26692f6bd94d398b522e19fa81ad6e2aaebf1933575f7a6803"
     },
     "ponytail-help": {
       "source": "dietrichgebert/ponytail",
       "sourceType": "github",
       "skillPath": "skills/ponytail-help/SKILL.md",
-      "computedHash": "a2cd9a9040fd39626875b77838ae6525893ff6d28e6368b2a188ca899c86956f"
+      "computedHash": "4582025c3923072fb6c35b8cbd75adf4f7ce47df0eff43cc9a2a39808537fd61"
     },
     "ponytail-review": {
       "source": "dietrichgebert/ponytail",
