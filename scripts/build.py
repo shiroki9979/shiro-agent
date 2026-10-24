@@ -21,6 +21,8 @@ INCLUDE_PATTERN = re.compile(r"<!--\s*INCLUDE:([^\s>]+)\s*-->")
 CLAUDE_RESERVED_SKILL_NAME = "synced"
 CLAUDE_RESERVED_SKILL_PREFIX = "anthropic-skills"
 
+SKILL_ADDENDA_DIR = "skill-addenda"
+
 DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
     "agents": Path.home() / ".agents",
     "antigravity": Path.home() / ".gemini" / "config",
@@ -88,6 +90,32 @@ def validate_skill_name(skill_name: str) -> None:
         raise ValueError(f"Skill name '{skill_name}' is reserved by Claude Code and would not be loaded.")
 
 
+def load_skill_addenda(repo_root: Path) -> Dict[str, Path]:
+    """收集 skill-addenda/<技能名稱>.md，作為第三方技能的本地補充段落。"""
+    addenda_root = repo_root / SKILL_ADDENDA_DIR
+    if not addenda_root.exists():
+        return {}
+    return {path.stem: path for path in addenda_root.glob("*.md")}
+
+
+def validate_skill_addenda(addenda: Dict[str, Path], discovered_skills: Dict[str, Tuple[str, Path]]) -> None:
+    """補充段落只服務第三方技能；對不到時中斷，避免上游移除或名稱打錯後靜默失效。"""
+    for skill_name in addenda:
+        origin, _ = discovered_skills.get(skill_name, (None, None))
+        if origin != "third-party":
+            raise ValueError(
+                f"Skill addendum '{skill_name}' has no matching third-party skill in '.agents/skills/'; "
+                "custom skills are edited directly."
+            )
+
+
+def append_skill_addendum(skill_md: Path, addendum_path: Path, repo_root: Path) -> None:
+    """僅附加至編譯輸出；上游原檔不動，以維持 skills-lock.json 雜湊與 `npx skills update` 可用。"""
+    addendum = expand_includes(addendum_path.read_text(encoding="utf-8"), repo_root)
+    base = skill_md.read_text(encoding="utf-8").rstrip("\r\n")
+    skill_md.write_text(f"{base}\n\n{addendum}", encoding="utf-8")
+
+
 def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
     """編譯自建 Skills (custom-skills/) 與第三方 Skills (.agents/skills/) 至輸出與部署路徑。"""
     pairs: List[Tuple[Path, Path]] = []
@@ -114,6 +142,8 @@ def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
                     )
                 discovered_skills[skill_name] = ("third-party", skill_dir)
 
+    addenda = load_skill_addenda(repo_root)
+    validate_skill_addenda(addenda, discovered_skills)
     for skill_name, (_, skill_dir) in discovered_skills.items():
         validate_skill_name(skill_name)
         dest_skill_dir = target_out / skill_name
@@ -126,6 +156,9 @@ def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
                 for agent_key in ["agents", "antigravity", "claude"]:
                     deploy_path = DEFAULT_DEPLOY_PATHS[agent_key] / "skills" / skill_name / rel_to_skill
                     pairs.append((dest_item, deploy_path))
+        addendum_path = addenda.get(skill_name)
+        if addendum_path is not None:
+            append_skill_addendum(dest_skill_dir / "SKILL.md", addendum_path, repo_root)
 
     # 同步 skills-lock.json 至全域 .agents 目錄
     lock_file = repo_root / "skills-lock.json"
@@ -253,7 +286,7 @@ def validate_output_dir(repo_root: Path, out_dir: Path) -> None:
     out_dir = out_dir.resolve()
     if repo_root.is_relative_to(out_dir):
         raise ValueError(f"Output directory overlaps repository: {out_dir}")
-    for source_name in ["custom-skills", ".agents", "configs", "shared", ".git"]:
+    for source_name in ["custom-skills", ".agents", "configs", "shared", SKILL_ADDENDA_DIR, ".git"]:
         source_dir = (repo_root / source_name).resolve()
         if out_dir.is_relative_to(source_dir) or source_dir.is_relative_to(out_dir):
             raise ValueError(f"Output directory overlaps source directory: {out_dir}")

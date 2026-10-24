@@ -1,10 +1,10 @@
 # ADR-0002：分離自建技能與第三方依賴目錄並於編譯時聚合
 
 > - Created: 2026-08-23
-> - Last Updated: 2026-08-24
+> - Last Updated: 2026-10-25
 > - Author: Bo-Xue Huang
 > - Status: 核准
-> - Related: [ADR-0001](0001-adopt-agent-skills-cli-standard.md), [ADR-0003](0003-multi-target-global-skills-dispatch.md)
+> - Related: [ADR-0001](0001-adopt-agent-skills-cli-standard.md), [ADR-0003](0003-multi-target-global-skills-dispatch.md), [ADR-0004](0004-append-local-addenda-to-third-party-skills.md)
 
 ---
 
@@ -36,3 +36,4 @@
 ## 5. Notes
 
 - **實作與遷移紀錄**：於 commit `332c98b` 實作 `custom-skills/` 與 [scripts/build.py](../../scripts/build.py) 聚合管線。
+- **後續延伸**：[ADR-0004](0004-append-local-addenda-to-third-party-skills.md) 允許以 `skill-addenda/` 於編譯輸出附加本地補充段落，第三方原檔仍維持靜態。

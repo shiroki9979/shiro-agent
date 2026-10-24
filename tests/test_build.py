@@ -114,6 +114,46 @@ class TestBuild(unittest.TestCase):
             compile_skills(self.root_dir, out_dir)
         self.assertIn("Skill name collision detected", str(ctx.exception))
 
+    def test_compile_skills_appends_addendum_to_third_party_skill(self):
+        # Arrange
+        addenda_dir = self.root_dir / "skill-addenda"
+        addenda_dir.mkdir()
+        (addenda_dir / "vendor-skill.md").write_text(
+            "## Local amendments\n<!-- INCLUDE:shared/coding-style.md -->\n", encoding="utf-8"
+        )
+
+        # Act
+        compile_skills(self.root_dir, self.root_dir / "dist")
+
+        # Assert
+        vendor_dest = self.root_dir / "dist" / ".agents" / "skills" / "vendor-skill" / "SKILL.md"
+        self.assertEqual(
+            vendor_dest.read_text(encoding="utf-8"),
+            "# Vendor Skill\n\n## Local amendments\n# Coding Style\nKeep it simple.\n",
+        )
+        vendor_src = self.third_party_skill_dir / "SKILL.md"
+        self.assertEqual(vendor_src.read_text(encoding="utf-8"), "# Vendor Skill")
+
+    def test_compile_skills_rejects_addendum_without_third_party_skill(self):
+        # custom-skill 應直接修改本體；missing-skill 代表名稱打錯或上游已移除
+        for skill_name in ["missing-skill", "custom-skill"]:
+            with self.subTest(skill_name=skill_name):
+                # Arrange
+                addenda_dir = self.root_dir / "skill-addenda"
+                addenda_dir.mkdir(exist_ok=True)
+                addendum = addenda_dir / f"{skill_name}.md"
+                addendum.write_text("## Local amendments\n", encoding="utf-8")
+
+                # Act / Assert
+                with self.assertRaises(ValueError) as ctx:
+                    compile_skills(self.root_dir, self.root_dir / "dist")
+                self.assertIn(
+                    f"Skill addendum '{skill_name}' has no matching third-party skill in '.agents/skills/'",
+                    str(ctx.exception),
+                )
+
+                addendum.unlink()
+
     def test_compile_targets_all_includes_dot_agents_skills(self):
         out_dir = self.root_dir / "dist"
         pairs = compile_targets(["all"], self.root_dir, out_dir)

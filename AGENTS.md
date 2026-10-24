@@ -1,7 +1,7 @@
 # Agent 指南：shiro-agent
 
 > 建立日期：2026-08-24
-> 最後更新：2026-10-07
+> 最後更新：2026-10-25
 
 本專案為跨平台 AI 開發環境（Antigravity, Cursor, Claude 等）之設定檔、共用行為規範與 Agent Skills 集中管理庫。
 
@@ -12,6 +12,7 @@
 - **共用規範**：[shared/](shared) 為規範唯一修改點，包含 [identity.md](shared/identity.md) 與 [coding-style.md](shared/coding-style.md)。主標題採用 `##`（H2）以適配入口模板 `# Rules` 的單一 H1 結構。嚴禁直接在 `configs/` 或 `dist/` 硬編碼修改共用規則。
 - **自建技能**：[custom-skills/](custom-skills)，每個技能必須包含 `SKILL.md`。支援以 `<!-- INCLUDE:shared/... -->` 標籤動態注入共用規範。
 - **第三方技能**：[.agents/skills/](.agents/skills) 與 [skills-lock.json](skills-lock.json)，遵循社群標準 CLI（`npx skills`）管理；完整技能功能與架構請參閱 [docs/third-party-skills.md](docs/third-party-skills.md)。
+- **第三方技能補充**：需調整第三方技能時，於 [skill-addenda/](skill-addenda) 新增 `<技能名稱>.md`，編譯時附加至輸出的 `SKILL.md`，不修改 `.agents/skills/` 原檔；依據見 [ADR-0004](docs/adr/0004-append-local-addenda-to-third-party-skills.md)。
 - **目標設定**：[configs/](configs) 存放針對各 Agent 的入口設定與特定設定檔（`antigravity/`、`codex/`、`cursor/`、`claude/`）。
 - **架構決策與術語**：術語遵循 [CONTEXT.md](CONTEXT.md)，重大架構決策依循 [adr-writing](custom-skills/adr-writing/SKILL.md) 規範記錄於 [docs/adr/](docs/adr)。
 
