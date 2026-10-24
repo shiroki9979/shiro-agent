@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 新增第三方技能本地補充機制：`skill-addenda/<技能名稱>.md` 於編譯時附加至第三方 `SKILL.md`，上游原檔與鎖定檔雜湊不變；名稱對不到第三方技能時中斷編譯（`scripts/build.py`，ADR-0004）。
+- 新增 `code-review` 本地補充：支援以 PR 編號為固定點、納入 `shared/coding-style.md` 共用規範，並要求執行期設定變更須實際執行驗證（`skill-addenda/code-review.md`）。
 - 新增自建技能 `restate-goal`：複述使用者目標與待解問題以對齊理解（`custom-skills/restate-goal/`）。
 - 新增 Claude Code 設定機制研究（`docs/claude-settings-research.md`）。
 - 編譯時拒絕 Claude Code 保留的技能名稱（`synced`、`anthropic-skills*`），避免部署後靜默不載入（`scripts/build.py`）。

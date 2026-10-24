@@ -1,7 +1,7 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-10-07
+最後更新：2026-10-25
 本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 60 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 ## 1. 技能總覽與分類架構
@@ -240,6 +240,7 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
   1. **Standards 軸**：檢查是否違反專案編碼規範及內建的 12 項 Fowler Code Smells 基準。
   2. **Spec 軸**：比對原始規格，揪出未實作項目、範圍蔓延（Scope Creep）與實作錯誤。
   - 雙軸報告並列呈現，不互相稀釋或重新加權排序。
+- **本地補充**：[skill-addenda/code-review.md](../skill-addenda/code-review.md) 於編譯時附加 PR 固定點處理、`shared/coding-style.md` 共用規範，以及執行期設定須實際執行驗證的要求（[ADR-0004](adr/0004-append-local-addenda-to-third-party-skills.md)）。
 
 #### [`diagnosing-bugs`](../.agents/skills/diagnosing-bugs/SKILL.md)
 
