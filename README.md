@@ -34,7 +34,7 @@ shiro-agent/
 ├── tests/                    # 單元測試
 ├── AGENTS.md                 # 專案 Agent 開發與行為指引
 ├── CHANGELOG.md              # 專案更新與版本日誌
-├── CONTEXT.md                # 領域術語表 (Domain Language & Glossary)
+├── GLOSSARY.md               # 領域術語表 (Domain Language & Glossary)
 ├── skills-lock.json          # 第三方 Skills 來源、雜湊與鎖定檔
 ├── pyproject.toml            # uv / Python 專案定義
 └── Makefile                  # 快捷開發與部署指令

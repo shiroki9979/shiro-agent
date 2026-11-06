@@ -14,7 +14,7 @@
 - **第三方技能**：[.agents/skills/](.agents/skills) 與 [skills-lock.json](skills-lock.json)，遵循社群標準 CLI（`npx skills`）管理；完整技能功能與架構請參閱 [docs/third-party-skills.md](docs/third-party-skills.md)。
 - **Skill Addendum**：需調整第三方技能時，於 [skill-addenda/](skill-addenda) 新增 `<技能名稱>.md`，編譯時附加至輸出的 `SKILL.md`，不修改 `.agents/skills/` 原檔；依據見 [ADR-0004](docs/adr/0004-append-local-addenda-to-third-party-skills.md)。
 - **目標設定**：[configs/](configs) 存放針對各 Agent 的入口設定與特定設定檔（`antigravity/`、`codex/`、`cursor/`、`claude/`）。
-- **架構決策與術語**：術語遵循 [CONTEXT.md](CONTEXT.md)，重大架構決策依循 [adr-writing](custom-skills/adr-writing/SKILL.md) 規範記錄於 [docs/adr/](docs/adr)。
+- **架構決策與術語**：術語遵循 [GLOSSARY.md](GLOSSARY.md)，重大架構決策依循 [adr-writing](custom-skills/adr-writing/SKILL.md) 規範記錄於 [docs/adr/](docs/adr)。
 
 ---
 
@@ -64,4 +64,4 @@ The default 5 canonical triage roles mapped 1:1 (`needs-triage`, `needs-info`, `
 
 ### Domain docs
 
-Single-context layout (`CONTEXT.md` + `docs/adr/` at repo root). See `docs/agents/domain.md`.
+Single-context layout (`GLOSSARY.md` + `docs/adr/` at repo root). See `docs/agents/domain.md`.

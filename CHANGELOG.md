@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- 領域術語表 `CONTEXT.md` 更名為 `GLOSSARY.md`，對齊上游 `mattpocock/skills` 命名，並同步 `AGENTS.md`、`README.md`、`docs/third-party-skills.md` 與 `docs/agents/domain.md` 引用。
+- 依最新 `setup-matt-pocock-skills` 範本更新 `docs/agents/issue-tracker.md`（sub-issue、blocked-by 指令、關閉流程與防止誤開至上游 repo）與 `docs/agents/triage-labels.md`。
 - `code-review` Skill Addendum 新增兩節：固定點為落後 upstream 的本機分支時先 `git fetch` 並改用 `@{u}`（分叉則詢問）；Spec 子代理預設不跑測試套件，僅在發現需執行佐證時跑單一測試檔（`skill-addenda/code-review.md`）。
 - `CONTEXT.md` 新增 **Skill Addendum** 術語，統一 AGENTS.md 與 CHANGELOG 的「第三方技能補充」、「本地補充」用詞。
 - 同步上游第三方技能：`diagram-design` 新增箱形圖（box plot）變體並強化匯入腳本與自檢；`mcp-builder` 新增 TypeScript SDK v2 實作指南；`code-review`、`grilling`、`research`、`setup-matt-pocock-skills` 等 `mattpocock/skills` 技能更新內文（`skills-lock.json`、`.agents/skills/`）。

@@ -1,7 +1,7 @@
 # Skills 工程工作流來源查證
 
 > 建立日期：2026-10-07
-> 最後更新：2026-10-07
+> 最後更新：2026-11-06
 > 查證範圍：指定文章及其 References；以作者維護的 README、SKILL.md、CHANGELOG 和本機鎖定技能交叉核對。
 
 ## 結論與版本邊界
@@ -40,7 +40,7 @@
 | 項目 | 處理方式與理由 |
 | :--- | :--- |
 | 專案初始化 | 已有 [issue tracker](agents/issue-tracker.md)、[triage labels](agents/triage-labels.md)、[domain docs](agents/domain.md) 與 AGENTS 入口，這次研究無須重新執行 setup。 |
-| 領域詞彙檔 | 上游 [1.3.0 變更紀錄][changes] 將 `CONTEXT.md` 改稱 `GLOSSARY.md`；本機部分技能也已使用新名，但本 repo 的 [AGENTS.md](../AGENTS.md)、[CONTEXT.md](../CONTEXT.md) 和 domain 設定仍指定舊名。依本專案明示規範讀取 `CONTEXT.md`；若另行遷移，須同步入口與引用，本次不改名。 |
+| 領域詞彙檔 | 上游 [1.3.0 變更紀錄][changes] 將 `CONTEXT.md` 改稱 `GLOSSARY.md`；本機部分技能也已使用新名，本 repo 已於 2026-11-06 將術語表遷移為 [GLOSSARY.md](../GLOSSARY.md)，並同步 [AGENTS.md](../AGENTS.md) 與 domain 設定。 |
 | 寫作準則 | 與既有 [writing-for-agents](../.agents/skills/writing-for-agents/SKILL.md) 和 [skill-creator](../.agents/skills/skill-creator/SKILL.md) 對照，提煉本 repo 的實務指南，不改寫第三方技能或增加同名技能。 |
 | 路徑與平台差異 | 沿用 [探索路徑研究](agent-skill-paths-research.md)；斜線指令是示意，不代表每個 Target Agent 的呼叫介面相同。上游 [1.2.0／1.3.0 變更紀錄][changes] 也區分 Codex metadata 與 Claude frontmatter，並修正跨技能呼叫。 |
 

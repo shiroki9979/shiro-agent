@@ -85,13 +85,13 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 
 - **來源**：`mattpocock/skills` (`skills/productivity/grill-me/`)
 - **觸發情境**：在**無專案儲存庫/無工作目錄**的情境下（例如思考獨立演算法、文章或抽象計畫），進行純對話式高強度質詢。
-- **功能描述**：無狀態（Stateless）包裝器，內部直接呼叫 `grilling`，不落盤產出 `CONTEXT.md` 或 ADR。
+- **功能描述**：無狀態（Stateless）包裝器，內部直接呼叫 `grilling`，不落盤產出 `GLOSSARY.md` 或 ADR。
 
 #### [`grill-with-docs`](../.agents/skills/grill-with-docs/SKILL.md)
 
 - **來源**：`mattpocock/skills` (`skills/engineering/grill-with-docs/`)
 - **觸發情境**：在**工作目錄/專案庫**中釐清需求或進行架構設計時。
-- **功能描述**：狀態化（Stateful）質詢流程。內部同時組合呼叫 `grilling` 與 `domain-modeling`，在推進質詢決策的同時，即時且同步更新 `CONTEXT.md` 術語表，並在符合條件時建立架構決策紀錄（ADR）。
+- **功能描述**：狀態化（Stateful）質詢流程。內部同時組合呼叫 `grilling` 與 `domain-modeling`，在推進質詢決策的同時，即時且同步更新 `GLOSSARY.md` 術語表，並在符合條件時建立架構決策紀錄（ADR）。
 
 #### [`to-questionnaire`](../.agents/skills/to-questionnaire/SKILL.md)
 
@@ -104,7 +104,7 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 
 - **來源**：`mattpocock/skills` (`skills/productivity/wait-what/`)
 - **觸發情境**：使用者在任何對話過程中發現 Agent 解釋過於晦澀、術語混亂或難以理解時。
-- **功能描述**：中斷當前節奏並強制重述。要求 Agent 以簡化技術英語（ASD-STE100 Simplified Technical English）風格與 `CONTEXT.md` 的通用語言，重新說明當前進度與脈絡。
+- **功能描述**：中斷當前節奏並強制重述。要求 Agent 以簡化技術英語（ASD-STE100 Simplified Technical English）風格與 `GLOSSARY.md` 的通用語言，重新說明當前進度與脈絡。
 
 ---
 
@@ -127,8 +127,8 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 #### [`domain-modeling`](../.agents/skills/domain-modeling/SKILL.md)
 
 - **來源**：`mattpocock/skills` (`skills/engineering/domain-modeling/`)
-- **觸發情境**：定義/調整領域模型、修改 `CONTEXT.md` 詞彙表或評估是否建立 ADR 時。
-- **功能描述**：主動挑戰模糊或超載的領域名詞（如區分 User vs Customer），強制維護領域語言純度。嚴格規範 `CONTEXT.md` 僅能包含通用詞彙（Glossary），不可寫入實作細節；並把關 ADR 建立三大門檻（難以逆轉、無脈絡下令人意外、源自真實取捨）。
+- **觸發情境**：定義/調整領域模型、修改 `GLOSSARY.md` 詞彙表或評估是否建立 ADR 時。
+- **功能描述**：主動挑戰模糊或超載的領域名詞（如區分 User vs Customer），強制維護領域語言純度。嚴格規範 `GLOSSARY.md` 僅能包含通用詞彙（Glossary），不可寫入實作細節；並把關 ADR 建立三大門檻（難以逆轉、無脈絡下令人意外、源自真實取捨）。
 
 #### [`codebase-design`](../.agents/skills/codebase-design/SKILL.md)
 
