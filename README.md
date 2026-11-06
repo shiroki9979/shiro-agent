@@ -1,7 +1,7 @@
 # shiro-agent
 
 > 建立日期：2026-08-22
-> 最後更新：2026-10-25
+> 最後更新：2026-11-06
 
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
@@ -14,6 +14,7 @@
 ```text
 shiro-agent/
 ├── custom-skills/            # 自有自建 Agent Skills (原始碼目錄，支援 include 模板展開)
+├── archived-skills/          # 已封存的自建 Skills (不參與編譯與部署)
 ├── .agents/skills/           # 第三方外部 Agent Skills (由 npx skills 管理)
 ├── skill-addenda/            # Skill Addendum：第三方 Skills 的本地補充段落 (編譯時附加至 SKILL.md)
 ├── configs/                  # 各 Agent 專屬設定與模板
@@ -33,7 +34,6 @@ shiro-agent/
 │   └── build.py              # 模板展開、技能聚合與部署腳本
 ├── tests/                    # 單元測試
 ├── AGENTS.md                 # 專案 Agent 開發與行為指引
-├── CHANGELOG.md              # 專案更新與版本日誌
 ├── GLOSSARY.md               # 領域術語表 (Domain Language & Glossary)
 ├── skills-lock.json          # 第三方 Skills 來源、雜湊與鎖定檔
 ├── pyproject.toml            # uv / Python 專案定義
