@@ -10,8 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 新增第三方技能本地補充機制：`skill-addenda/<技能名稱>.md` 於編譯時附加至第三方 `SKILL.md`，上游原檔與鎖定檔雜湊不變；名稱對不到第三方技能時中斷編譯（`scripts/build.py`，ADR-0004）。
-- 新增 `code-review` 本地補充：支援以 PR 編號為固定點、納入 `shared/coding-style.md` 共用規範，並要求執行期設定變更須實際執行驗證（`skill-addenda/code-review.md`）。
+- 新增 Skill Addendum 機制：`skill-addenda/<技能名稱>.md` 於編譯時附加至第三方 `SKILL.md`，上游原檔與鎖定檔雜湊不變；名稱對不到第三方技能時中斷編譯（`scripts/build.py`，ADR-0004）。
+- 新增 `code-review` Skill Addendum：支援以 PR 編號為固定點、納入 `shared/coding-style.md` 共用規範，並要求執行期設定變更須實際執行驗證（`skill-addenda/code-review.md`）。
 - 新增自建技能 `restate-goal`：複述使用者目標與待解問題以對齊理解（`custom-skills/restate-goal/`）。
 - 新增 Claude Code 設定機制研究（`docs/claude-settings-research.md`）。
 - 編譯時拒絕 Claude Code 保留的技能名稱（`synced`、`anthropic-skills*`），避免部署後靜默不載入（`scripts/build.py`）。
@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `code-review` Skill Addendum 新增兩節：固定點為落後 upstream 的本機分支時先 `git fetch` 並改用 `@{u}`（分叉則詢問）；Spec 子代理預設不跑測試套件，僅在發現需執行佐證時跑單一測試檔（`skill-addenda/code-review.md`）。
+- `CONTEXT.md` 新增 **Skill Addendum** 術語，統一 AGENTS.md 與 CHANGELOG 的「第三方技能補充」、「本地補充」用詞。
 - 同步上游第三方技能：`diagram-design` 新增箱形圖（box plot）變體並強化匯入腳本與自檢；`mcp-builder` 新增 TypeScript SDK v2 實作指南；`code-review`、`grilling`、`research`、`setup-matt-pocock-skills` 等 `mattpocock/skills` 技能更新內文（`skills-lock.json`、`.agents/skills/`）。
 - Cursor Skills 改為僅部署至 `~/.agents/skills/`；不再建立 `~/.cursor/skills/` 重複副本。Antigravity 維持既有 legacy `agy` 的 `~/.gemini/config/` 部署基線。
 - 同步上游第三方技能：`diagram-design` 新增瀑布圖、Excalidraw 匯入與 CJK 字型支援；`frontend-design` 更新設計原則與反模板化指引，並將技能手冊圖表數由 39 改為 40（`skills-lock.json`、`.agents/skills/`、`docs/third-party-skills.md`）。

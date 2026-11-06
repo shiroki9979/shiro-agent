@@ -1,7 +1,7 @@
 # Shiro Agent
 
 > 建立日期：2026-08-23
-> 最後更新：2026-09-16
+> 最後更新：2026-11-06
 
 跨開發環境之多 Agent 設定檔、共用行為規範與標準化 Agent Skills 的集中管理系統。
 
@@ -18,6 +18,10 @@ _Avoid_: 內部插件（Internal plugin）、本機技能（Local skill）、私
 **Third-party Skill**:
 透過 Agent Skills CLI 安裝並記錄於 `skills-lock.json`、存放於 `.agents/skills/` 的外部社群技能。
 _Avoid_: 外部依賴（External dependency）、第三方套件（Third-party package）
+
+**Skill Addendum**:
+附加於 Third-party Skill 編譯輸出結尾、用以調整其行為的本地 Markdown 段落；原檔與 Skill Lock 不變。
+_Avoid_: 補丁（Patch）、覆寫（Override）、本地修改（Local modification）、Fork
 
 **Agent Config**:
 自共用規範編譯而成、針對特定目標 AI Agent 所建立的專屬規則與環境設定檔。
