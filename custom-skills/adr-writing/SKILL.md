@@ -3,10 +3,6 @@ name: adr-writing
 description: ADR（架構決策紀錄）的建立門檻、撰寫與維護。使用於判斷決策是否值得寫 ADR、新增 ADR，或修訂既有 ADR、變更其 Status（Proposed／Accepted／Superseded／Deprecated／Rejected）。
 ---
 
-# ADR 撰寫與維護
-
-**專案規範優先**：目標 repo 的規範（`AGENTS.md`、ADR 目錄的 README）另定目錄、編號、metadata key 或 Status 寫法時，一律從專案規範；本技能只補足專案未規定的部分。
-
 ## 1. 門檻
 
 三項同時成立才寫 ADR：
