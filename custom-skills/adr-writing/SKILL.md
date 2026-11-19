@@ -1,158 +1,144 @@
 ---
 name: adr-writing
-description: 建立與維護架構決策紀錄（ADR）。在需要記錄重大架構決策、評估取捨、追蹤狀態變更（提議中/核准/被取代/已廢棄/已拒絕）或使用者提及 ADR 時使用。
+description: ADR（架構決策紀錄）的建立門檻、撰寫與維護。使用於判斷決策是否值得寫 ADR、新增 ADR，或修訂既有 ADR、變更其 Status（Proposed／Accepted／Superseded／Deprecated／Rejected）。
 ---
 
-# 架構決策紀錄（ADR）撰寫規範
+# ADR 撰寫與維護
 
-本技能用於指導專案架構決策紀錄（Architecture Decision Records, ADR）的門檻檢核、標準化撰寫、狀態生命週期維護與合規把關。
+**專案規範優先**：目標 repo 的規範（`AGENTS.md`、ADR 目錄的 README）另定目錄、編號、metadata key 或 Status 寫法時，一律從專案規範；本技能只補足專案未規定的部分。
 
----
+## 1. 門檻
 
-## 1. 建立門檻檢核（Gatekeeping Criteria）
+三項同時成立才寫 ADR：
 
-ADR 用於捕捉重大架構決策與背景取捨。**僅在同時滿足以下三項條件時提議建立 ADR**，避免瑣碎記錄造成維護負擔：
+1. **難以逆轉**：實施後變更或遷移的成本高，例如更換資料庫、核心框架、通訊協定。
+2. **無脈絡下令人意外**：不是業界唯一標準解，沒參與討論的人讀程式碼會疑惑，例如自研簡化版工具而不引入成熟套件。
+3. **源自真實取捨**：在多個可行方案之間，依具體約束（效能、時程、複雜度）做出選擇。
 
-1. **難以逆轉（Hard to reverse）**：一旦實施，變更或遷移的成本極高（例如：更換資料庫、核心框架、通訊協定）。
-2. **無脈絡下令人意外（Surprising out of context）**：非業界唯一標準解，未參與討論的人閱讀程式碼時容易產生疑惑（例如：自研簡化版工具而非引入成熟套件）。
-3. **源自真實取捨（Rooted in real trade-offs）**：在多個可行候選方案之間，根據具體約束（效能、時程、複雜度）做出的權衡選擇。
+任一項不成立，說明寫在一般文件、程式碼註解或 PR 說明。
 
-> 若未同時滿足上述條件，應引導將說明記錄於一般文件、程式碼註解或 PR 說明中。
+## 2. 路徑與編號
 
----
+專案沒有規定時：
 
-## 2. 路徑與編號慣例（Path & Numbering Conventions）
+- 依序探測既有目錄：`docs/adr/` → `docs/adrs/` → `doc/adr/` → `docs/architecture/decisions/`；找到就沿用該目錄與其檔名風格。
+- 沒有既有目錄：`docs/adr/NNNN-kebab-slug.md`。
+- 編號為四位數流水號，取目錄中最大編號 + 1。
+- Slug 全小寫 kebab-case，用具體動詞與關鍵技術詞，例如 `0001-adopt-agent-skills-cli.md`。
+- H1 為 `# ADR-NNNN：<決策摘要>`，編號與檔名一致。
 
-### 路徑自動探測
+## 3. Status
 
-下筆前優先探測目標工作區既有的 ADR 存放目錄：
+| 值 | 意義 |
+| --- | --- |
+| `Proposed` | 方案已提出，討論或檢驗中，尚未定稿 |
+| `Accepted` | 決策已定稿並實施 |
+| `Superseded` | 整個決策被後續 ADR 推翻或取代 |
+| `Deprecated` | 決策涉及的功能、模組或架構已退役，且沒有替代方案 |
+| `Rejected` | 評估後不採納，保留紀錄避免重複論證 |
 
-- 依序探測：`docs/adr/` ➔ `docs/adrs/` ➔ `doc/adr/` ➔ `docs/architecture/decisions/`
-- 若專案已存在 ADR 目錄，遵循該目錄及其現有檔名風格（例如 `NNNN-slug.md` 或 `adr-NNNN-slug.md`）。
-- 若為全新專案（無既有 ADR 目錄），預設採用：`docs/adr/NNNN-kebab-slug.md`。
+| 轉換 | 同步動作 |
+| --- | --- |
+| `Proposed` → `Accepted` | 確認決策已定稿 |
+| `Proposed` → `Rejected` | Notes 寫一句不採納的原因 |
+| `Accepted` → `Superseded` | 新 ADR 寫 `Supersedes`，舊 ADR 寫 `Superseded by`，兩份的 Notes 互相連結 |
+| `Accepted` → `Deprecated` | Notes 寫退役原因 |
 
-### 編號與命名規則
+**部分取代**：新 ADR 只推翻舊 ADR 的一部分時，舊 ADR 的 Status 維持 `Accepted`，加上 `Superseded by` 連結，並在 Notes 寫明被取代的段落。
 
-- **編號格式**：四位數流水號（`NNNN`），取目標目錄中現有最大編號 + 1（例如 `0001`、`0002`）。
-- **Slug 命名**：全小寫 kebab-case，使用具體動詞與關鍵技術詞（例如 `0001-adopt-agent-skills-cli.md`）。
-- **Title 一致性**：文件頂層標題必須與編號相符，格式為 `# ADR-NNNN：<簡要說明架構決策>`。
+**正文凍結**：`Proposed` 的正文可以直接改。`Accepted` 之後正文保持原貌，修訂寫成 Notes 條目；決策本身改變時開新 ADR。
 
----
+## 4. Metadata
 
-## 3. 狀態生命週期（Status Lifecycle）
+H1 之後的第一個區塊，blockquote 清單、英文 key，依下列順序：
 
-本規範支援完整 5 態生命週期：
+| Key | 規則 |
+| --- | --- |
+| `Created` | 必填，單一 `YYYY-MM-DD` |
+| `Last Updated` | 必填，單一 `YYYY-MM-DD`；正文或 Notes 有變動時改成當天 |
+| `Author` | 選填；向使用者確認，不臆造 |
+| `Status` | 必填，§3 的一個值 |
+| `Related` | 選填，只放連結 |
+| `Supersedes`、`Superseded by` | 選填，只放連結 |
+| `Revisions` | 選填，本身有修訂時放一個指向本檔 Notes 的錨點連結 |
 
-```text
-                  ┌──────────────┐
-                  │ 提議中       │
-                  │ (Proposed)   │
-                  └──────┬───────┘
-                         │
-             ┌───────────┴───────────┐
-             ▼                       ▼
-      ┌──────────────┐        ┌──────────────┐
-      │ 核准         │        │ 已拒絕       │
-      │ (Accepted)   │        │ (Rejected)   │
-      └──────┬───────┘        └──────────────┘
-             │
-      ┌──────┴───────┐
-      ▼              ▼
-┌──────────────┐┌──────────────┐
-│ 被取代       ││ 已廢棄       │
-│ (Superseded) ││ (Deprecated) │
-└──────────────┘└──────────────┘
-```
+連結以 `、` 分隔。Metadata 只放上述值；變更經過（改了什麼、審查輪次、票號、PR 號）寫在 commit message。
 
-- **提議中（Proposed）**：方案已提出並正在討論或檢驗中，尚未正式定稿。
-- **核准（Accepted）**：決策已獲得共識並正式實施。
-- **被取代（Superseded）**：後續決策推翻或調整了本決策。必須於新舊 ADR 的 `Notes` 建立雙向參照連結。
-- **已廢棄（Deprecated）**：該決策所涉及之功能、模組或架構已退役且無直接替代方案。
-- **已拒絕（Rejected）**：經評估後決定不採納之提議，保留紀錄以避免未來重複論證。
-
-> **歷史不回頭改寫原則**：已核准（Accepted）之決策語意絕不可直接篡改歷史內容；若決策變更，開立新 ADR 並將舊件狀態調整為「被取代」。
-
----
-
-## 4. ADR 標準模板（7 核心區塊）
+## 5. 模板
 
 ```markdown
-# ADR-NNNN：<簡要說明架構決策>
+# ADR-NNNN：<決策摘要>
 
 > - Created: YYYY-MM-DD
 > - Last Updated: YYYY-MM-DD
-> - Author: <name>
-> - Status: 提議中 | 核准 | 被取代 | 已廢棄 | 已拒絕
-> - Related: [ADR-000N](000N-slug.md)、[相關 issue/plan](../...)
-
----
+> - Status: Proposed
+> - Related: [ADR-000N](000N-slug.md)
 
 ## 1. Context
 
-<說明什麼背景、技術約束或業務需求催生此決策；一句話點出要解決的核心問題。>
+<背景、技術約束或業務需求；一句話點出要解決的核心問題。>
 
 ## 2. Decision
 
-<清晰陳述最終選定的方案與實施範圍。>
+<選定的方案與實施範圍。>
 
 ### Rationale & Alternatives Considered
 
-<說明為何選擇此方案，並對比評估過的其他候選方案（優缺點與被拒絕的原因）。>
-
-- **選定方案**：...（優勢與適用原因）
-- **候選方案 A**：...（未採納原因）
-- **候選方案 B**：...（未採納原因）
+- **選定方案**：<優勢與適用原因>
+- **候選方案 A**：<未採納原因>
+- **候選方案 B**：<未採納原因>
 
 ## 3. Consequences
 
-- **正面效益（Positive）**：...
-- **代價與風險（Trade-offs & Risks）**：...
-- **不做／延後範圍（Out of Scope / Deferred）**：...
+- **Positive**：...
+- **Trade-offs & Risks**：...
+- **Out of Scope / Deferred**：...
 
 ## 4. Compliance
 
-<說明如何確保此決策被具體遵守。必須包含可驗證的手段（如測試、Linter、CI 檢查、特定檔案檢查或 Code Review 清單）；無強制工具時寫明「無自動化強制機制，依賴 PR Code Review 清單驗證」。>
+<可驗證的遵守手段：測試、Linter、CI 檢查、特定檔案檢查或 Code Review 清單。沒有自動化手段時寫「無自動化強制機制，依賴 PR Code Review 清單驗證」。>
 
 ## 5. Notes
 
-- **取代／被取代關係**：若本 ADR 取代了舊決策，在此加入連結（例如「取代 [ADR-0001](0001-xxx.md)」）；若被新 ADR 取代，在此註明「被 [ADR-0005](0005-yyy.md) 取代」。
-- **實作與遷移紀錄**：追蹤實作 PR、遷移注意事項或已知限制。
+- 取代關係：取代 [ADR-0001](0001-xxx.md)；或被 [ADR-0005](0005-yyy.md) 取代。
+- 修訂條目、遷移注意事項、已知限制。
 ```
 
----
+Notes 的修訂條目一次修訂一項，依日期往後追加，以日期開頭並寫出受影響的段落；來自另一份 ADR 或規格時附連結：
 
-## 5. 核心操作流程（Standard Operating Procedure）
+```markdown
+- 2026-10-30：§2.4 的計分限制被 [ADR-0046](0046-recursive-segment-settlement.md) 取代，正文不動。
+```
 
-### 流程 A：新增 ADR
+## 6. 流程
 
-1. **門檻檢核**：對照「三大門檻」，確認符合 ADR 記錄標準。
-2. **目錄與編號確認**：掃描既有目錄，決定下一個四位數編號（`NNNN`）與 slug。
-3. **資訊對齊**：與使用者確認核心問題、候選方案、選定決策與作者資訊（禁止隨意臆造作者）。
-4. **填寫模板**：依標準模板撰寫，確保 `Rationale` 包含方案取捨，`Compliance` 明確且可操作。
-5. **關聯引用**：若涉及既有 ADR，建立雙向關聯連結。
+### A. 新增 ADR
 
-### 流程 B：編輯與狀態維護
+1. 對照 §1 三項門檻，三項都成立才往下。
+2. 依專案規範或 §2 決定目錄、編號與 slug。
+3. 與使用者確認核心問題、候選方案、選定決策；寫 `Author` 時一併確認作者。
+4. 依 §5 模板撰寫：`Rationale` 列出每個候選方案的取捨，`Compliance` 寫出可驗證的手段。
+5. 涉及既有 ADR 時，在雙方建立連結（`Related`，或取代關係的 `Supersedes`／`Superseded by` 加 Notes）。
 
-1. **閱讀脈絡**：先讀取目標 ADR 全文及其 `Related` 連結。
-2. **更新時間戳**：更新 `Last Updated: YYYY-MM-DD`。
-3. **狀態流轉處理**：
-   - `提議中` ➔ `核准`：確認決策已定稿並通過討論。
-   - `核准` ➔ `被取代`：新開立替代 ADR，並在兩份 ADR 的 `Notes` 區塊加上雙向超連結。
-   - `提議中` ➔ `已拒絕` / `核准` ➔ `已廢棄`：在 `Notes` 或 `Context` 補充廢棄/拒絕之簡短原因。
-4. **保持歷史原貌**：不得修改既有決策之原始語意，補充資訊以新區塊或修訂記錄形式附加。
+完成條件：§7 檢核表每項都符合。
 
----
+### B. 修訂或變更 Status
 
-## 6. 品質驗收檢核表（Quality Checklist）
+1. 讀目標 ADR 全文與它連結的 ADR。
+2. 依 §3 的轉換表做同步動作；`Accepted` 的正文不改，修訂寫成 Notes 條目，必要時加 `Revisions` 或 `Superseded by`。
+3. `Last Updated` 改成當天。
 
-在建立或更新 ADR 後，執行以下檢核以確保品質：
+完成條件：§7 檢核表每項都符合，且雙方 ADR 的連結都已更新。
 
-| 檢核項目 | 合格標準 |
-| :--- | :--- |
-| **門檻合格** | 符合「難以逆轉、無脈絡下令人意外、源自真實取捨」三要件 |
-| **七項完整** | Header Metadata、Context、Decision、Consequences、Compliance、Notes 皆具實質內容 |
-| **狀態合法** | Status 僅為：`提議中`、`核准`、`被取代`、`已廢棄`、`已拒絕` 之一 |
-| **編號一致** | 檔名流水號、檔案路徑與 `# ADR-NNNN` 標題一致 |
-| **合規可驗** | Compliance 段落具備具體可驗證機制，無模糊空話 |
-| **雙向連結** | 被取代或有繼承關係之 ADR 已於雙方 Notes 正確建立相對路徑連結 |
-| **無機密資訊** | 無硬編碼密鑰、憑證或私有 token |
+## 7. 檢核表
+
+| 項目 | 合格標準 |
+| --- | --- |
+| 門檻 | §1 三項同時成立 |
+| 區塊完整 | Metadata、Context、Decision、Consequences、Compliance、Notes 都有實質內容 |
+| Metadata | 只有 §4 的 key（或專案規範所列）；日期欄位是單一日期，連結欄位只有連結 |
+| Status | §3 的一個值（或專案規範所列） |
+| 編號 | 檔名、路徑與 H1 的編號一致 |
+| Compliance | 有具體可驗證的機制 |
+| 連結 | 取代或繼承關係在雙方都有相對路徑連結 |
+| 機密 | 沒有硬編碼的密鑰、憑證或私有 token |
