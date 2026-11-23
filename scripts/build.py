@@ -391,7 +391,8 @@ def deploy(
 
 
 def collect_deployment_files(file_pairs: List[Tuple[Path, Path]], selected: List[str]) -> Dict[str, List[str]]:
-    current: Dict[str, List[str]] = {target: [] for target in selected}
+    # 只編譯目標不列入清單，revert 後舊版程式仍能讀取
+    current: Dict[str, List[str]] = {target: [] for target in selected if TARGET_DEPLOY_RULES[target]}
     for src_file, dest_file in file_pairs:
         if not src_file.is_file():
             raise FileNotFoundError(f"Deployment source not found: {src_file}")
