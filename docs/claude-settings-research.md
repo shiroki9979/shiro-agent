@@ -1,7 +1,7 @@
 # Claude Code 設定機制研究
 
 > 建立日期：2026-09-26
-> 最後更新：2026-09-26
+> 最後更新：2026-11-23
 > 查證範圍：僅採用 Anthropic 官方 Claude Code 文件（`code.claude.com/docs`）與官方 JSON Schema（SchemaStore 上由文件指向之 `claude-code-settings.json`）；所有連結於 2026-09-26 存取。本機 `~/.claude/` 僅觀察目錄結構，未讀取憑證或私人內容。
 
 ## 結論摘要
@@ -223,7 +223,7 @@ Auto memory 由 Claude 自行寫入 `~/.claude/projects/<project>/memory/`（`ME
 | `hooks`、`paths`、`shell` | skill 級 hooks、路徑條件啟用、inline shell 類型 |
 | `metadata`、`license`、`compatibility` | Agent Skills 規格欄位，Claude Code 接受但不作用 |
 
-若 skill 同時要上傳 claude.ai 或經 Skills API 使用，只能用 `name`、`description`、`license`、`compatibility`、`metadata`、`allowed-tools` 六個欄位，其他欄位會造成上傳硬錯誤。[官方 Skills 文件](https://code.claude.com/docs/en/skills)
+上傳 claude.ai 時，官方文件只規定 `name`（小寫英數與連字號、至多 64 字元、與目錄同名）與 `description`（至多 1,024 字元）為必填；2026-11-23 複查未見「其他欄位造成上傳錯誤」的記載，`claude plugin validate` 僅對規格外欄位提出警告。含 `disable-model-invocation`、`argument-hint` 的 plugin 已實際經 Customize > Plugins 上傳成功。[官方 Skills how-to](https://claude.com/docs/skills/how-to)；[官方 Plugins build 文件](https://claude.com/docs/plugins/build)
 
 ### 與 commands、subagents、plugins 的關係
 
@@ -311,3 +311,5 @@ Auto memory 由 Claude 自行寫入 `~/.claude/projects/<project>/memory/`（`ME
 - [Explore the .claude directory](https://code.claude.com/docs/en/claude-directory)（2026-09-26 存取）
 - [CLI reference](https://code.claude.com/docs/en/cli-reference)（2026-09-26 存取）
 - [Claude Code settings JSON Schema](https://json.schemastore.org/claude-code-settings.json)（2026-09-26 存取）
+- [Skills how-to](https://claude.com/docs/skills/how-to)（2026-11-23 存取）
+- [Build a plugin](https://claude.com/docs/plugins/build)（2026-11-23 存取）

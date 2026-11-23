@@ -13,6 +13,7 @@ import re
 import shutil
 import stat
 import tempfile
+import zipfile
 from typing import Dict, List, Optional, Tuple
 
 INCLUDE_PATTERN = re.compile(r"<!--\s*INCLUDE:([^\s>]+)\s*-->")
@@ -22,6 +23,12 @@ CLAUDE_RESERVED_SKILL_NAME = "synced"
 CLAUDE_RESERVED_SKILL_PREFIX = "anthropic-skills"
 
 SKILL_ADDENDA_DIR = "skill-addenda"
+
+# claude.ai 依 plugin 名稱判斷覆蓋或新增，改名會在 web 端多出一份
+CLAUDE_PLUGIN_NAME = "shiro-agent"
+CLAUDE_PLUGIN_DESCRIPTION = "shiro-agent 編譯的個人 Agent Skills（自建與第三方）"
+# zip 時間戳下限；固定後相同來源產出相同 bytes，可比對 hash 判斷是否需重新上傳
+ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 
 DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
     "agents": Path.home() / ".agents",
@@ -37,6 +44,7 @@ TARGET_OUTPUT_DIRS = {
     "cursor": "cursor",
     "claude": "claude",
     "codex": "codex",
+    "claude-plugin": "claude-plugin",
 }
 
 DEPLOY_MANIFEST_NAME = ".shiro-agent-deploy.json"
@@ -50,6 +58,8 @@ TARGET_DEPLOY_RULES = {
     "cursor": {"cursor": ["rules/", "settings.json"]},
     "claude": {"claude": ["CLAUDE.md"]},
     "codex": {"codex": ["AGENTS.md"]},
+    # claude.ai 僅接受手動上傳，只編譯不部署
+    "claude-plugin": {},
 }
 
 
@@ -116,11 +126,12 @@ def append_skill_addendum(skill_md: Path, addendum_path: Path, repo_root: Path) 
     skill_md.write_text(f"{base}\n\n{addendum}", encoding="utf-8")
 
 
-def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
-    """編譯自建 Skills (custom-skills/) 與第三方 Skills (.agents/skills/) 至輸出與部署路徑。"""
-    pairs: List[Tuple[Path, Path]] = []
-    target_out = out_dir / ".agents" / "skills"
+def write_skills(repo_root: Path, skills_out: Path) -> List[Tuple[str, Path]]:
+    """編譯自建 Skills (custom-skills/) 與第三方 Skills (.agents/skills/) 至 skills_out/<技能名稱>/。
 
+    回傳 (技能名稱, 技能內相對路徑) 清單，供呼叫端決定部署去向。
+    """
+    written: List[Tuple[str, Path]] = []
     custom_root = repo_root / "custom-skills"
     third_party_root = repo_root / ".agents" / "skills"
 
@@ -146,19 +157,30 @@ def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
     validate_skill_addenda(addenda, discovered_skills)
     for skill_name, (_, skill_dir) in discovered_skills.items():
         validate_skill_name(skill_name)
-        dest_skill_dir = target_out / skill_name
+        dest_skill_dir = skills_out / skill_name
         dest_skill_dir.mkdir(parents=True, exist_ok=True)
         for item in skill_dir.glob("**/*"):
             if item.is_file() and item.name != ".gitkeep":
                 rel_to_skill = item.relative_to(skill_dir)
-                dest_item = dest_skill_dir / rel_to_skill
-                process_file(item, dest_item, repo_root)
-                for agent_key in ["agents", "antigravity", "claude"]:
-                    deploy_path = DEFAULT_DEPLOY_PATHS[agent_key] / "skills" / skill_name / rel_to_skill
-                    pairs.append((dest_item, deploy_path))
+                process_file(item, dest_skill_dir / rel_to_skill, repo_root)
+                written.append((skill_name, rel_to_skill))
         addendum_path = addenda.get(skill_name)
         if addendum_path is not None:
             append_skill_addendum(dest_skill_dir / "SKILL.md", addendum_path, repo_root)
+
+    return written
+
+
+def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
+    """編譯 Skills 至 dist/.agents/skills/，並派發至各 Target Agent 的全域技能目錄。"""
+    pairs: List[Tuple[Path, Path]] = []
+    target_out = out_dir / ".agents" / "skills"
+
+    for skill_name, rel_to_skill in write_skills(repo_root, target_out):
+        dest_item = target_out / skill_name / rel_to_skill
+        for agent_key in ["agents", "antigravity", "claude"]:
+            deploy_path = DEFAULT_DEPLOY_PATHS[agent_key] / "skills" / skill_name / rel_to_skill
+            pairs.append((dest_item, deploy_path))
 
     # 同步 skills-lock.json 至全域 .agents 目錄
     lock_file = repo_root / "skills-lock.json"
@@ -168,6 +190,46 @@ def compile_skills(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
         pairs.append((dest_lock, DEFAULT_DEPLOY_PATHS["agents"] / "skills-lock.json"))
 
     return pairs
+
+
+def compile_claude_plugin(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
+    """將全部 Skills 打包為可上傳至 claude.ai 的 Claude Plugin（目錄與 zip）。
+
+    claude.ai 只接受手動上傳，故不回傳部署配對。
+    """
+    target_out = out_dir / "claude-plugin"
+    plugin_dir = target_out / CLAUDE_PLUGIN_NAME
+    write_skills(repo_root, plugin_dir / "skills")
+
+    manifest = plugin_dir / ".claude-plugin" / "plugin.json"
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    manifest.write_text(
+        json.dumps(
+            {"name": CLAUDE_PLUGIN_NAME, "description": CLAUDE_PLUGIN_DESCRIPTION},
+            ensure_ascii=False,
+            indent=2,
+        ) + "\n",
+        encoding="utf-8",
+    )
+
+    write_reproducible_zip(plugin_dir, target_out / f"{CLAUDE_PLUGIN_NAME}.zip")
+    return []
+
+
+def write_reproducible_zip(src_dir: Path, zip_path: Path) -> None:
+    """將 src_dir 內容置於 zip 根目錄；固定時間戳、排序與權限，使相同來源產出相同 bytes。"""
+    files = sorted(
+        (path for path in src_dir.rglob("*") if path.is_file()),
+        key=lambda path: path.relative_to(src_dir).as_posix(),
+    )
+    with zipfile.ZipFile(zip_path, "w") as archive:
+        for path in files:
+            info = zipfile.ZipInfo(path.relative_to(src_dir).as_posix(), date_time=ZIP_TIMESTAMP)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            # 權限只保留可執行與否，避免不同 umask 造成 bytes 差異
+            mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
+            info.external_attr = (stat.S_IFREG | mode) << 16
+            archive.writestr(info, path.read_bytes())
 
 
 def compile_antigravity(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Path]]:
@@ -267,6 +329,7 @@ def compile_targets(targets: List[str], repo_root: Path, out_dir: Path) -> List[
         "cursor": compile_cursor,
         "claude": compile_claude,
         "codex": compile_codex,
+        "claude-plugin": compile_claude_plugin,
     }
 
     selected = selected_targets(targets)
@@ -482,7 +545,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--target",
         nargs="+",
-        choices=["all", "skills", "antigravity", "cursor", "claude", "codex"],
+        choices=["all", *TARGET_OUTPUT_DIRS],
         default=["all"],
         help="Target configurations to compile/deploy (default: all)",
     )

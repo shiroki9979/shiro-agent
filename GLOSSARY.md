@@ -1,14 +1,14 @@
 # Shiro Agent
 
 > 建立日期：2026-08-23
-> 最後更新：2026-11-06
+> 最後更新：2026-11-23
 
 跨開發環境之多 Agent 設定檔、共用行為規範與標準化 Agent Skills 的集中管理系統。
 
 ## 語言（Language）
 
 **Skill**:
-包含 `SKILL.md` 檔案與選用之輔助腳本或參考資源的模組化目錄，用於擴充 Agent 的特定領域能力。
+包含 `SKILL.md` 檔案與選用之輔助腳本或參考資源的模組化目錄，用於擴充 Agent 的特定領域能力；Claude Plugin 是收納 Skill 的容器，不是 Skill 的別名。
 _Avoid_: 插件（Plugin）、工具（Tool）、擴充（Extension）、動作（Action）
 
 **Custom Skill**:
@@ -34,6 +34,10 @@ _Avoid_: 基礎設定（Base config）、系統提示詞（System prompt）、�
 **Target Agent**:
 接收編譯後設定檔與 Skills 部署的目標 AI 開發平台（例如 Antigravity、Codex、Cursor 或 Claude）。
 _Avoid_: 客戶端（Client）、工具（Tool）、環境（Environment）
+
+**Claude Plugin**:
+依 Claude plugin 格式打包編譯後 Skills 的容器，供手動上傳至 claude.ai 個人使用；不經部署，故 claude.ai 不屬於 Target Agent。
+_Avoid_: Plugin pack、Bundle、擴充包
 
 **Codex Instruction**:
 Codex 的持久行為規範文件，以 `AGENTS.md` 表示並部署至 Codex home。
