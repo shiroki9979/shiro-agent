@@ -1,7 +1,7 @@
 # Agent 指南：shiro-agent
 
 > 建立日期：2026-08-24
-> 最後更新：2026-11-06
+> 最後更新：2026-11-23
 
 本專案為跨平台 AI 開發環境（Antigravity, Cursor, Claude 等）之設定檔、共用行為規範與 Agent Skills 集中管理庫。
 
@@ -25,7 +25,7 @@
 | 動作 | 指令 | 說明 |
 | :--- | :--- | :--- |
 | **執行測試** | `make test` | 執行單元測試套件（`uv run python -m unittest discover -s tests -p "test_*.py" -v`） |
-| **編譯設定** | `make build` | 展開模板並聚合技能至 `dist/` |
+| **編譯設定** | `make build` | 展開模板並聚合技能至 `dist/`，並產出可上傳 claude.ai 的 Claude Plugin（`dist/claude-plugin/shiro-agent.zip`） |
 | **預覽部署** | `make dry-run` | 模擬編譯與部署流程 |
 | **部署發布** | `make deploy` | 編譯並同步至全域系統路徑（`~/.agents`, `~/.gemini/config`, `~/.cursor`, `~/.claude`, `~/.codex`），自動產生 `.bak` |
 | **技能管理** | `make skills-list`, `make skills-add PKG=<source>`, `make skills-update` | 管理與更新第三方 Agent Skills |

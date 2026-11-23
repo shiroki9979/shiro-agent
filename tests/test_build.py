@@ -9,6 +9,7 @@ import shutil
 import stat
 import sys
 import os
+import zipfile
 from unittest.mock import patch
 
 # Add repo root to sys.path
@@ -243,6 +244,82 @@ class TestBuild(unittest.TestCase):
                 self.assertIn(f"Skill name '{reserved_name}' is reserved by Claude Code", str(ctx.exception))
 
                 shutil.rmtree(reserved_dir)
+
+    def test_compile_claude_plugin_packages_compiled_skills_without_deployment(self):
+        # Arrange
+        addenda_dir = self.root_dir / "skill-addenda"
+        addenda_dir.mkdir()
+        (addenda_dir / "vendor-skill.md").write_text("## Local amendments\n", encoding="utf-8")
+        out_dir = self.root_dir / "dist"
+
+        # Act
+        pairs = compile_targets(["claude-plugin"], self.root_dir, out_dir)
+
+        # Assert
+        plugin_dir = out_dir / "claude-plugin" / "shiro-agent"
+        manifest = json.loads((plugin_dir / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+        self.assertEqual(set(manifest), {"name", "description"})
+        self.assertEqual(manifest["name"], "shiro-agent")
+        self.assertEqual(
+            (plugin_dir / "skills" / "custom-skill" / "SKILL.md").read_text(encoding="utf-8"),
+            "# Custom Skill\n# Identity\nName: White Hunag",
+        )
+        self.assertEqual(
+            (plugin_dir / "skills" / "vendor-skill" / "SKILL.md").read_text(encoding="utf-8"),
+            "# Vendor Skill\n\n## Local amendments\n",
+        )
+        self.assertFalse((plugin_dir / "skills-lock.json").exists())
+        self.assertFalse((out_dir / ".agents").exists())
+        self.assertEqual(pairs, [])
+
+    def test_claude_plugin_zip_holds_plugin_contents_at_archive_root(self):
+        # Arrange
+        script = self.custom_skill_dir / "scripts" / "run.sh"
+        script.parent.mkdir()
+        script.write_text("#!/bin/sh\n", encoding="utf-8")
+        script.chmod(0o700)
+        out_dir = self.root_dir / "dist"
+
+        # Act
+        compile_targets(["claude-plugin"], self.root_dir, out_dir)
+
+        # Assert
+        plugin_dir = out_dir / "claude-plugin" / "shiro-agent"
+        expected_files = sorted(
+            path.relative_to(plugin_dir).as_posix() for path in plugin_dir.rglob("*") if path.is_file()
+        )
+        with zipfile.ZipFile(out_dir / "claude-plugin" / "shiro-agent.zip") as archive:
+            self.assertEqual(archive.namelist(), expected_files)
+            self.assertIn(".claude-plugin/plugin.json", archive.namelist())
+            for name in expected_files:
+                self.assertEqual(archive.read(name), (plugin_dir / name).read_bytes())
+            modes = {info.filename: stat.S_IMODE(info.external_attr >> 16) for info in archive.infolist()}
+        self.assertEqual(modes["skills/custom-skill/scripts/run.sh"], 0o755)
+        self.assertEqual(modes["skills/custom-skill/SKILL.md"], 0o644)
+
+    def test_claude_plugin_zip_is_identical_for_unchanged_sources(self):
+        # Arrange
+        out_dir = self.root_dir / "dist"
+        zip_path = out_dir / "claude-plugin" / "shiro-agent.zip"
+        compile_targets(["claude-plugin"], self.root_dir, out_dir)
+        first_build = zip_path.read_bytes()
+        os.utime(self.custom_skill_dir / "SKILL.md", (1_000_000_000, 1_000_000_000))
+
+        # Act
+        compile_targets(["claude-plugin"], self.root_dir, out_dir)
+
+        # Assert
+        self.assertEqual(zip_path.read_bytes(), first_build)
+
+    def test_deploy_all_skips_claude_plugin_across_repeated_deploys(self):
+        out_dir = self.root_dir / "dist"
+        deploy(compile_targets(["all"], self.root_dir, out_dir), backup=False)
+
+        deploy(compile_targets(["all"], self.root_dir, out_dir), backup=False)
+
+        self.assertTrue((out_dir / "claude-plugin" / "shiro-agent.zip").exists())
+        deployed_files = [path for path in (self.root_dir / "home").rglob("*") if path.is_file()]
+        self.assertFalse(any("shiro-agent.zip" in path.name or "plugin.json" in path.name for path in deployed_files))
 
     def test_compile_and_deploy_dry_run(self):
         src_file = self.root_dir / "sample.txt"

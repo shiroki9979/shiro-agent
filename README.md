@@ -1,7 +1,7 @@
 # shiro-agent
 
 > 建立日期：2026-08-22
-> 最後更新：2026-11-06
+> 最後更新：2026-11-23
 
 個人多 Agent（Antigravity, Codex, Cursor, Claude 等）設定與 Skills 管理庫。
 
@@ -49,7 +49,7 @@ shiro-agent/
 ### 快捷指令 (Makefile)
 
 ```bash
-make build         # 重建 dist/ 的目標產物 (聚合 custom-skills 與 .agents/skills)
+make build         # 重建 dist/ 的目標產物 (聚合 custom-skills 與 .agents/skills，含 Claude Plugin)
 make deploy        # 部署至全域系統路徑，並清理已失去來源的受管檔案
 make dry-run       # 預覽編譯與部署
 make test          # 執行單元測試
@@ -74,7 +74,7 @@ uv run python scripts/build.py --dry-run
 # 或使用 Makefile
 make dry-run
 
-# 指定單一目標 (如 antigravity, codex, cursor, claude, skills)
+# 指定單一目標 (如 antigravity, codex, cursor, claude, skills, claude-plugin)
 uv run python scripts/build.py --target skills --dry-run
 ```
 
@@ -114,7 +114,21 @@ uv run python scripts/build.py --target cursor --deploy
 
 部署清單損壞、包含越界路徑，或待寫入／清理的路徑含符號連結時，部署會在變更全域檔案前報錯，避免影響受管範圍之外的檔案。
 
-### 3. Agent Skills 管理
+### 3. 上傳 Claude Plugin 至 claude.ai
+
+`make build` 會將全部 Skills（自建、第三方與 Skill Addendum）打包為 Claude Plugin，內容與部署至 `~/.claude/skills/` 的版本一致：
+
+- `dist/claude-plugin/shiro-agent/`：解壓後的 plugin 目錄（`.claude-plugin/plugin.json` 與 `skills/`），供檢查內容。
+- `dist/claude-plugin/shiro-agent.zip`：上傳用檔案。
+
+此目標只編譯不部署，`make deploy` 不會處理它。上傳步驟：claude.ai 左側欄 **Customize** → **Plugins** → **Add** → **Upload plugin**，選擇 `shiro-agent.zip`。
+
+- 同名 plugin 重新上傳會直接覆蓋舊版。
+- zip 固定時間戳與檔案順序，來源未變時 bytes 相同；可比對 `sha256sum dist/claude-plugin/shiro-agent.zip` 判斷是否需重新上傳。
+- 若曾另外上傳相同來源的 plugin（例如 `mattpocock-skills`），先移除，避免同一 Skill 出現兩份。
+- Shared Rule 不含在 plugin 內，見 [#10](https://github.com/shiroki9979/shiro-agent/issues/10)。
+
+### 4. Agent Skills 管理
 
 #### 自建技能（Custom Skills）
 
