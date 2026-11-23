@@ -321,6 +321,16 @@ class TestBuild(unittest.TestCase):
         deployed_files = [path for path in (self.root_dir / "home").rglob("*") if path.is_file()]
         self.assertFalse(any("shiro-agent.zip" in path.name or "plugin.json" in path.name for path in deployed_files))
 
+    def test_deploy_manifest_omits_compile_only_targets(self):
+        # 未記錄只編譯目標，revert 後舊版程式仍能讀取部署清單
+        out_dir = self.root_dir / "dist"
+
+        deploy(compile_targets(["all"], self.root_dir, out_dir), backup=False)
+
+        manifest = json.loads((DEFAULT_DEPLOY_PATHS["agents"] / ".shiro-agent-deploy.json").read_text(encoding="utf-8"))
+        self.assertNotIn("claude-plugin", manifest["targets"])
+        self.assertIn("skills", manifest["targets"])
+
     def test_compile_and_deploy_dry_run(self):
         src_file = self.root_dir / "sample.txt"
         src_file.write_text("Hello", encoding="utf-8")
