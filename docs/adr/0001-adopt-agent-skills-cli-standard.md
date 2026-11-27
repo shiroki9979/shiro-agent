@@ -1,12 +1,16 @@
 # ADR-0001：採用 Agent Skills CLI 標準規範進行技能管理
 
 > - Created: 2026-08-23
-> - Last Updated: 2026-08-24
+> - Last Updated: 2026-11-27
 > - Author: Bo-Xue Huang
-> - Status: 核准
+> - Status: Accepted
 > - Related: [ADR-0002](0002-separate-custom-and-third-party-skills.md)
 
 ---
+
+## Plain Language Summary
+
+這個專案要管理別人寫的技能，也就是用來擴充 AI 開發助理能力的說明檔。早期用自己寫的腳本下載，但看不出上游有沒有更新，也無法確認下載的內容沒被改過。我們決定改用社群通用的技能管理工具來安裝與更新，並用一份鎖定檔記下每個技能的來源與內容指紋，自己寫的下載腳本全部移除。代價是開發環境必須裝有 Node.js，目錄結構也要照這個工具的規定。
 
 ## 1. Context
 

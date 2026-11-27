@@ -1,12 +1,16 @@
 # ADR-0004：以編譯時附加的本地補充段落調整第三方技能
 
 > - Created: 2026-10-25
-> - Last Updated: 2026-10-25
+> - Last Updated: 2026-11-27
 > - Author: Bo-Xue Huang
-> - Status: 核准
+> - Status: Accepted
 > - Related: [ADR-0002](0002-separate-custom-and-third-party-skills.md)
 
 ---
+
+## Plain Language Summary
+
+別人寫的技能（擴充 AI 開發助理能力的說明檔）有時要補上我們自己環境的資訊才能正確運作。但直接改它的檔案，下次同步上游時會被覆寫，內容檢查也會對不上。我們決定把補充內容另外寫成獨立的檔案，編譯時自動接在該技能的結尾，原檔完全不動。代價是實際部署的技能和上游原檔不同，排查行為時要兩邊一起看。補充內容也只能接在最後，上游大改之後可能引用到已不存在的步驟，需要人工檢查。
 
 ## 1. Context
 
