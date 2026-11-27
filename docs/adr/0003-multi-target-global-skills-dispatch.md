@@ -1,12 +1,16 @@
 # ADR-0003：多目標全域 Skills 派發架構
 
 > - Created: 2026-08-23
-> - Last Updated: 2026-08-24
+> - Last Updated: 2026-11-27
 > - Author: Bo-Xue Huang
-> - Status: 核准
+> - Status: Accepted
 > - Related: [ADR-0001](0001-adopt-agent-skills-cli-standard.md), [ADR-0002](0002-separate-custom-and-third-party-skills.md)
 
 ---
+
+## Plain Language Summary
+
+各家 AI 開發工具（Antigravity、Cursor、Claude Code 等）各自到不同的資料夾找技能，也就是擴充 AI 助理能力的說明檔。只放一處的話，其他工具讀不到；用捷徑（符號連結）指向同一處，在容器或某些編輯器裡又可能失效。因此決定部署時把全部技能實際複製到每個工具各自的資料夾，覆蓋前先自動備份舊檔。代價是同樣的檔案會存好幾份，部署步驟變多，而且目前不能只對某個工具開關個別技能。
 
 ## 1. Context
 

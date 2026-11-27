@@ -1,12 +1,16 @@
 # ADR-0002：分離自建技能與第三方依賴目錄並於編譯時聚合
 
 > - Created: 2026-08-23
-> - Last Updated: 2026-10-25
+> - Last Updated: 2026-11-27
 > - Author: Bo-Xue Huang
-> - Status: 核准
+> - Status: Accepted
 > - Related: [ADR-0001](0001-adopt-agent-skills-cli-standard.md), [ADR-0003](0003-multi-target-global-skills-dispatch.md), [ADR-0004](0004-append-local-addenda-to-third-party-skills.md)
 
 ---
+
+## Plain Language Summary
+
+外部作者寫的技能（擴充 AI 開發助理能力的說明檔）由管理工具放在固定的目錄，工具更新或清理時會覆寫那個目錄。如果把專案自己寫的技能也放進去，就可能被蓋掉或誤刪；而且專案自己寫的技能在發布前要先插入共用規範，外部的則是原樣照用。因此決定把兩種技能放在不同目錄，編譯時才合併成一份輸出，遇到同名就報錯停下。代價是每次修改後都要多跑一次編譯。
 
 ## 1. Context
 
