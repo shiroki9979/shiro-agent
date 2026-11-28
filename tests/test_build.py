@@ -272,6 +272,33 @@ class TestBuild(unittest.TestCase):
         self.assertFalse((out_dir / ".agents").exists())
         self.assertEqual(pairs, [])
 
+    def test_compile_claude_plugin_rejects_xml_tags_in_skill_description(self):
+        # Arrange
+        (self.custom_skill_dir / "SKILL.md").write_text(
+            "---\nname: custom-skill\ndescription: Use when the user types /custom <topic>.\n---\n\n# Custom Skill\n",
+            encoding="utf-8",
+        )
+
+        # Act & Assert
+        with self.assertRaises(ValueError) as ctx:
+            compile_targets(["claude-plugin"], self.root_dir, self.root_dir / "dist")
+        self.assertIn("Skill 'custom-skill'", str(ctx.exception))
+        self.assertIn("<topic>", str(ctx.exception))
+
+    def test_compile_claude_plugin_accepts_angle_brackets_outside_description(self):
+        # Arrange
+        (self.custom_skill_dir / "SKILL.md").write_text(
+            "---\nname: custom-skill\ndescription: Use when the user types /custom [topic].\n---\n\nTopic: <topic>\n",
+            encoding="utf-8",
+        )
+        out_dir = self.root_dir / "dist"
+
+        # Act
+        compile_targets(["claude-plugin"], self.root_dir, out_dir)
+
+        # Assert
+        self.assertTrue((out_dir / "claude-plugin" / "shiro-agent.zip").exists())
+
     def test_claude_plugin_zip_holds_plugin_contents_at_archive_root(self):
         # Arrange
         script = self.custom_skill_dir / "scripts" / "run.sh"
