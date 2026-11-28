@@ -1,27 +1,28 @@
 # 第三方 Agent Skills 功能與架構參考手冊
 
 建立日期：2026-08-24  
-最後更新：2026-10-25
-本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 60 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
+最後更新：2026-11-28
+本文件詳細彙整 [.agents/skills/](../.agents/skills) 目錄下透過社群標準 CLI（`npx skills` / [skills-lock.json](../skills-lock.json)）安裝之 62 個第三方 Agent Skills。內容涵蓋套件來源、觸發情境、運作機制、輸出產物與核心工作流程。
 
 ## 1. 技能總覽與分類架構
 
 使用工作流前可先查看 [來源核對與版本差異](skills-workflow-research.md)；要將流程整理成自建技能時，參閱 [技能撰寫與驗證指南](skill-authoring-guide.md)。
 
-目前的 60 個第三方技能主要源自 `mattpocock/skills`（36 個）、`anthropics/skills`（16 個）、`dietrichgebert/ponytail`（6 個）、`cathrynlavery/diagram-design`（1 個）與 `vercel-labs/skills`（1 個 `find-skills`），依軟體開發生命週期與功能定位分為 12 大類別：
+目前的 62 個第三方技能主要源自 `mattpocock/skills`（37 個）、`anthropics/skills`（16 個）、`dietrichgebert/ponytail`（6 個）、`cathrynlavery/diagram-design`（1 個）、`vercel-labs/skills`（1 個 `find-skills`）與 `humanlayer/skills`（1 個 `show-me`），依軟體開發生命週期與功能定位分為 12 大類別：
 
 | 分類領域 | 包含技能 | 核心功能摘要 |
+| :--- | :--- | :--- |
 | **1. 流程導航與探索** | [`ask-matt`](../.agents/skills/ask-matt/SKILL.md), [`find-skills`](../.agents/skills/find-skills/SKILL.md) | 技能路由器、開源生態系技能搜尋與安裝 |
 | **2. 需求質詢與決策** | [`grilling`](../.agents/skills/grilling/SKILL.md), [`grill-me`](../.agents/skills/grill-me/SKILL.md), [`grill-with-docs`](../.agents/skills/grill-with-docs/SKILL.md), [`to-questionnaire`](../.agents/skills/to-questionnaire/SKILL.md), [`wait-what`](../.agents/skills/wait-what/SKILL.md) | 設計樹質詢原型、無狀態/狀態化訪談、問卷生成、重述對齊 |
 | **3. 宏觀規劃與迷霧探索** | [`wayfinder`](../.agents/skills/wayfinder/SKILL.md) | 超大型任務決策地圖（Map）與決策工單驅散戰爭迷霧 |
 | **4. 領域建模與架構設計** | [`domain-modeling`](../.agents/skills/domain-modeling/SKILL.md), [`codebase-design`](../.agents/skills/codebase-design/SKILL.md), [`improve-codebase-architecture`](../.agents/skills/improve-codebase-architecture/SKILL.md), [`setup-ts-deep-modules`](../.agents/skills/setup-ts-deep-modules/SKILL.md) | 領域語言收斂與 ADR 門檻、深模組（Deep Module）設計詞彙、視覺化架構報告、TypeScript 邊界隔離配置 |
 | **5. 規格制定與工單拆分** | [`to-spec`](../.agents/skills/to-spec/SKILL.md), [`to-tickets`](../.agents/skills/to-tickets/SKILL.md) | 對話無訪談綜合規格書、Tracer-bullet 垂直切片與阻擋依賴工單拆解 |
 | **6. 開發實作與測試驅動** | [`implement`](../.agents/skills/implement/SKILL.md), [`implement-spec`](../.agents/skills/implement-spec/SKILL.md), [`tdd`](../.agents/skills/tdd/SKILL.md), [`prototype`](../.agents/skills/prototype/SKILL.md), [`migrate-to-shoehorn`](../.agents/skills/migrate-to-shoehorn/SKILL.md), [`frontend-design`](../.agents/skills/frontend-design/SKILL.md), [`mcp-builder`](../.agents/skills/mcp-builder/SKILL.md), [`webapp-testing`](../.agents/skills/webapp-testing/SKILL.md), [`skill-creator`](../.agents/skills/skill-creator/SKILL.md) | 單 Session/多 Agent 並行實作、TDD 垂直切片、邏輯與 UI 拋棄式原型、測試型別斷言遷移、反模板化前端視覺、MCP Server 建構、Playwright 本機測試、Skill 撰寫與評測 |
-| **7. 程式碼審查與除錯維護** | [`code-review`](../.agents/skills/code-review/SKILL.md), [`diagnosing-bugs`](../.agents/skills/diagnosing-bugs/SKILL.md), [`resolving-merge-conflicts`](../.agents/skills/resolving-merge-conflicts/SKILL.md) | 規範與需求雙軸並行 Code Review、頑固 Bug 與效能回歸診斷閉環、Git 意圖衝突解決 |
+| **7. 程式碼審查與除錯維護** | [`code-review`](../.agents/skills/code-review/SKILL.md), [`diagnosing-bugs`](../.agents/skills/diagnosing-bugs/SKILL.md), [`pr`](../.agents/skills/pr/SKILL.md) | 規範與需求雙軸並行 Code Review、頑固 Bug 與效能回歸診斷閉環、視覺化 PR 說明與合併風險評估 |
 | **8. 工單分流與儲存庫配置** | [`setup-matt-pocock-skills`](../.agents/skills/setup-matt-pocock-skills/SKILL.md), [`triage`](../.agents/skills/triage/SKILL.md) | 儲存庫 Issue Tracker 與標籤初始化配置、議題與外部 PR 狀態機分流 |
-| **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md), [`doc-coauthoring`](../.agents/skills/doc-coauthoring/SKILL.md), [`internal-comms`](../.agents/skills/internal-comms/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲、Git 防護鉤子、Pre-commit 與練習題骨架、結構化共寫文件、內部溝通套版 |
+| **9. 交接、輔助與寫作系統** | [`handoff`](../.agents/skills/handoff/SKILL.md), [`claude-handoff`](../.agents/skills/claude-handoff/SKILL.md), [`research`](../.agents/skills/research/SKILL.md), [`wizard`](../.agents/skills/wizard/SKILL.md), [`teach`](../.agents/skills/teach/SKILL.md), [`loop-me`](../.agents/skills/loop-me/SKILL.md), [`writing-for-agents`](../.agents/skills/writing-for-agents/SKILL.md), [`writing-fragments`](../.agents/skills/writing-fragments/SKILL.md), [`writing-shape`](../.agents/skills/writing-shape/SKILL.md), [`writing-beats`](../.agents/skills/writing-beats/SKILL.md), [`git-guardrails-claude-code`](../.agents/skills/git-guardrails-claude-code/SKILL.md), [`setup-pre-commit`](../.agents/skills/setup-pre-commit/SKILL.md), [`scaffold-exercises`](../.agents/skills/scaffold-exercises/SKILL.md), [`doc-coauthoring`](../.agents/skills/doc-coauthoring/SKILL.md), [`internal-comms`](../.agents/skills/internal-comms/SKILL.md), [`retro`](../.agents/skills/retro/SKILL.md) | 對話交接文件/背景派發、一手來源研究、人工操作互動式嚮導、長期教學工作區、生活工作流規格化、Agent 文件寫作準則、寫作三部曲、Git 防護鉤子、Pre-commit 與練習題骨架、結構化共寫文件、內部溝通套版、Session 回顧與 Agent 環境改善 |
 | **10. 文件產製與編輯** | [`docx`](../.agents/skills/docx/SKILL.md), [`pptx`](../.agents/skills/pptx/SKILL.md), [`pdf`](../.agents/skills/pdf/SKILL.md), [`xlsx`](../.agents/skills/xlsx/SKILL.md) | Word／PowerPoint／PDF／試算表之建立、讀取、編輯與轉換（Anthropic source-available，非 Apache 2.0） |
-| **11. 視覺設計與生成產出** | [`canvas-design`](../.agents/skills/canvas-design/SKILL.md), [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md), [`theme-factory`](../.agents/skills/theme-factory/SKILL.md), [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md), [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md), [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md), [`diagram-design`](../.agents/skills/diagram-design/SKILL.md) | 靜態海報／藝術 PNG／PDF、p5.js 生成藝術、工件主題套用、Anthropic 品牌樣式、Slack GIF、複雜 React HTML artifact、40 種編輯級系統架構與流程圖表（HTML/SVG） |
+| **11. 視覺設計與生成產出** | [`canvas-design`](../.agents/skills/canvas-design/SKILL.md), [`algorithmic-art`](../.agents/skills/algorithmic-art/SKILL.md), [`theme-factory`](../.agents/skills/theme-factory/SKILL.md), [`brand-guidelines`](../.agents/skills/brand-guidelines/SKILL.md), [`slack-gif-creator`](../.agents/skills/slack-gif-creator/SKILL.md), [`web-artifacts-builder`](../.agents/skills/web-artifacts-builder/SKILL.md), [`diagram-design`](../.agents/skills/diagram-design/SKILL.md), [`show-me`](../.agents/skills/show-me/SKILL.md) | 靜態海報／藝術 PNG／PDF、p5.js 生成藝術、工件主題套用、Anthropic 品牌樣式、Slack GIF、複雜 React HTML artifact、52 種編輯級系統架構與流程圖表（HTML/SVG/PNG/PDF）、對話主題的精簡視覺化說明 |
 | **12. 極簡實作與防過度工程** | [`ponytail`](../.agents/skills/ponytail/SKILL.md), [`ponytail-audit`](../.agents/skills/ponytail-audit/SKILL.md), [`ponytail-debt`](../.agents/skills/ponytail-debt/SKILL.md), [`ponytail-gain`](../.agents/skills/ponytail-gain/SKILL.md), [`ponytail-help`](../.agents/skills/ponytail-help/SKILL.md), [`ponytail-review`](../.agents/skills/ponytail-review/SKILL.md) | 最短路徑 YAGNI 實作階梯、全儲存庫過度工程稽核、捷徑債務帳本追蹤、基準省工記分板、速查卡、過度複雜度審查 |
 
 ---
@@ -230,7 +231,7 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 
 ---
 
-### 類別 7：程式碼審查與除錯維護 (Review, Debugging & Merge)
+### 類別 7：程式碼審查與除錯維護 (Review, Debugging & PR)
 
 #### [`code-review`](../.agents/skills/code-review/SKILL.md)
 
@@ -254,11 +255,11 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
   - **Phase 5: Fix + regression test**（在正確接縫建立回歸測試後套用修復）。
   - **Phase 6: Cleanup**（驗證修復、清除所有除錯日誌與拋棄式程式碼）。
 
-#### [`resolving-merge-conflicts`](../.agents/skills/resolving-merge-conflicts/SKILL.md)
+#### [`pr`](../.agents/skills/pr/SKILL.md)
 
-- **來源**：`mattpocock/skills` (`skills/engineering/resolving-merge-conflicts/`)
-- **觸發情境**：Git Merge 或 Rebase 過程中發生衝突時。
-- **功能描述**：檢視衝突雙方的 Git Commit 與原始 PR/工單意圖，按區塊（Hunk）在保留雙方核心意圖的前提下進行語意整合，嚴禁擅自 `--abort` 或隨意保留單邊行數，並於解決後執行自動化驗證。
+- **來源**：`mattpocock/skills` (`skills/engineering/pr/`)
+- **觸發情境**：撰寫 PR 說明（PR body）時。
+- **功能描述**：以固定三段模板產出 PR 說明：**Summary**（挑選最小可說明重點的視圖：虛擬碼、呼叫樹、元件樹、檔案樹、Mermaid 或 `diff` 草圖）、**Evidence**（變更前後對照，截圖優先，其次為測試或輸出結果）、**Merge Danger**（單向門／雙向門判定與 Blast Radius 影響範圍）。用語遵循專案 `GLOSSARY.md`；視覺化手法改編自 `show-me`。
 
 ---
 
@@ -370,6 +371,12 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 - **觸發情境**：撰寫內部溝通稿，如 3P updates、公司電子報、FAQ、狀態報告、領導層更新、專案更新或事故報告時。
 - **功能描述**：依溝通類型載入 `examples/` 對應指引（`3p-updates.md`、`company-newsletter.md`、`faq-answers.md`、`general-comms.md`），套用該類型之格式、語氣與資訊蒐集步驟。
 
+#### [`retro`](../.agents/skills/retro/SKILL.md)
+
+- **來源**：`mattpocock/skills` (`skills/engineering/retro/`)
+- **觸發情境**：使用者明確要求對某次 Coding Session 進行回顧時（`disable-model-invocation: true`，僅能手動呼叫）。
+- **功能描述**：先載入 `writing-for-agents` 寫作準則，閱讀指定 Session（預設為當前 Session）的一手紀錄，從 Navigation、Automated checks、Coding standards、Global AGENTS.md、Tool economy、No-ops、Information access 七個面向找出 Agent 環境的改善點，依嚴重度排序提出。機械式違規優先轉為 Linter／Pre-commit／CI 檢查，判斷型規則才寫入 `CODING_STANDARDS.md`。
+
 ---
 
 ### 類別 10：文件產製與編輯 (Document Creation & Editing)
@@ -443,8 +450,14 @@ Matt Pocock 技能體系定義了一套從構想到交付的標準工作流路�
 #### [`diagram-design`](../.agents/skills/diagram-design/SKILL.md)
 
 - **來源**：`cathrynlavery/diagram-design` (`skills/diagram-design/`)
-- **觸發情境**：使用者要求繪製架構圖、流程圖、時序圖、狀態機、資料模型等 40 種視覺圖表，或需重繪 draw.io / Mermaid / Excalidraw 為獨立 HTML/SVG/PNG 時。
-- **功能描述**：支援 40 種編輯級專業圖表（架構、資料流、時序、狀態機等），提供 Minimal Light、Minimal Dark 與 Full-editorial 三種樣式，並支援從網站擷取品牌色彩或 Excalidraw 手繪風格重繪。
+- **觸發情境**：使用者要求繪製架構圖、流程圖、時序圖、狀態機、資料模型、Git graph 等 52 種視覺圖表，或需將 draw.io / Mermaid / Excalidraw / PlantUML 重繪為獨立 HTML/SVG/PNG 時。
+- **功能描述**：支援 52 種編輯級專業圖表（架構、資料流、時序、狀態機、分支與發布流程等），提供 Minimal Light、Minimal Dark 與 Full-editorial 三種樣式，並支援從網站擷取品牌色彩或 Excalidraw 手繪風格重繪。依使用者要求以 `scripts/export_svg.py`、`export_png.py`、`export_pdf.py` 手動匯出 SVG／PNG／向量 PDF（PDF 可選 A4／A3／Letter 版面或保留完整編輯版面）。
+
+#### [`show-me`](../.agents/skills/show-me/SKILL.md)
+
+- **來源**：`humanlayer/skills` (`plugins/show-me/skills/show-me/`)
+- **觸發情境**：使用者明確要求以視覺方式理解當前對話主題時（`disable-model-invocation: true`，僅能手動呼叫）。
+- **功能描述**：挑選最小可說明重點的視圖：虛擬碼、呼叫樹、元件樹、檔案樹、Mermaid、`diff` 草圖或完整程式碼區塊；資訊過於密集時改為產出單一聚焦的 HTML 圖解或簡報並開啟。視覺緊貼其說明文字，只保留回答當前問題所需的元素。
 
 ---
 
