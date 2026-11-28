@@ -225,6 +225,8 @@ Auto memory 由 Claude 自行寫入 `~/.claude/projects/<project>/memory/`（`ME
 
 上傳 claude.ai 時，官方文件只規定 `name`（小寫英數與連字號、至多 64 字元、與目錄同名）與 `description`（至多 1,024 字元）為必填；2026-11-23 複查未見「其他欄位造成上傳錯誤」的記載，`claude plugin validate` 僅對規格外欄位提出警告。含 `disable-model-invocation`、`argument-hint` 的 plugin 已實際經 Customize > Plugins 上傳成功。[官方 Skills how-to](https://claude.com/docs/skills/how-to)；[官方 Plugins build 文件](https://claude.com/docs/plugins/build)
 
+2026-11-28 實際上傳時，claude.ai 以「SKILL.md description cannot contain XML tags」退回整個 plugin（`eli5` 的 description 含 `<topic>`）；此限制記載於 [Agent Skills 總覽](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) 的 Field requirements，`make build` 已於打包前檢查。同頁另列 `name` 不得含 `anthropic`、`claude` 保留字，但未說明是否適用 claude.ai 上傳；含 `claude-handoff` 等名稱的 plugin 是否被拒尚待實測，build 暫不攔截。
+
 ### 與 commands、subagents、plugins 的關係
 
 - **Commands**：自訂 commands 已併入 skills。`~/.claude/commands/<name>.md` 與 `~/.claude/skills/<name>/SKILL.md` 都建立 `/name`，commands 支援 skill frontmatter（`name`、`paths` 除外）但無 supporting files；新工作建議用 skill。[官方 Skills 文件](https://code.claude.com/docs/en/skills)

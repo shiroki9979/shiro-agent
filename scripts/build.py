@@ -29,6 +29,10 @@ CLAUDE_PLUGIN_NAME = "shiro-agent"
 CLAUDE_PLUGIN_DESCRIPTION = "shiro-agent 編譯的個人 Agent Skills（自建與第三方）"
 # zip 時間戳下限；固定後相同來源產出相同 bytes，可比對 hash 判斷是否需重新上傳
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+# claude.ai 上傳時拒絕 description 含 XML 標籤的技能，整個 plugin 都會被退回
+FRONTMATTER_PATTERN = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n", re.DOTALL)
+FRONTMATTER_DESCRIPTION_PATTERN = re.compile(r"^description:(.*?)(?=^\S|\Z)", re.MULTILINE | re.DOTALL)
+XML_TAG_PATTERN = re.compile(r"</?[A-Za-z][^<>]*>")
 
 DEFAULT_DEPLOY_PATHS: Dict[str, Path] = {
     "agents": Path.home() / ".agents",
@@ -200,6 +204,7 @@ def compile_claude_plugin(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Pa
     target_out = out_dir / "claude-plugin"
     plugin_dir = target_out / CLAUDE_PLUGIN_NAME
     write_skills(repo_root, plugin_dir / "skills")
+    validate_claude_ai_skill_descriptions(plugin_dir / "skills")
 
     manifest = plugin_dir / ".claude-plugin" / "plugin.json"
     manifest.parent.mkdir(parents=True, exist_ok=True)
@@ -214,6 +219,19 @@ def compile_claude_plugin(repo_root: Path, out_dir: Path) -> List[Tuple[Path, Pa
 
     write_reproducible_zip(plugin_dir, target_out / f"{CLAUDE_PLUGIN_NAME}.zip")
     return []
+
+
+def validate_claude_ai_skill_descriptions(skills_dir: Path) -> None:
+    """在打包前攔下 claude.ai 會拒收的 description，錯誤訊息指出技能名稱與標籤。"""
+    for skill_md in sorted(skills_dir.glob("*/SKILL.md")):
+        frontmatter = FRONTMATTER_PATTERN.match(skill_md.read_text(encoding="utf-8"))
+        description = frontmatter and FRONTMATTER_DESCRIPTION_PATTERN.search(frontmatter.group(1))
+        tags = XML_TAG_PATTERN.findall(description.group(1)) if description else []
+        if tags:
+            raise ValueError(
+                f"Skill '{skill_md.parent.name}': SKILL.md description contains XML tags ({', '.join(tags)}), "
+                "which claude.ai rejects on upload."
+            )
 
 
 def write_reproducible_zip(src_dir: Path, zip_path: Path) -> None:
